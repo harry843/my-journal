@@ -1,0 +1,1 @@
+export 	const routes = [{label: 'Home',slug:''},, {label:'Blog', slug:'blog'}];

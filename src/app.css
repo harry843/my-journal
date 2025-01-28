@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Agbalumo&family=Heebo&family=Open+Sans:ital@0;1&family=Roboto&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Source+Serif+4:opsz@8..60&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.container {
+	width: auto;
+	height: auto;
+	margin: 0.5rem 0;
+}
+
+@media print {
+	body {
+		width: auto;
+		height: auto;
+		margin: 0.5rem 0;
+	}
+}
+
+html {
+	scroll-padding-top: 75px;
+}
+
+.sticky-sidebar {
+	position: sticky;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 1.5rem;
+	justify-content: center; /* Vertically centered */
+	align-self: flex-start;
+	gap: 2rem;
+	top: 50%; /* Stick to the top of the containing element */
+	transform: translateY(-75%) translateX(75%);
+	z-index: 1; /* Ensure it appears above other content */
+}
+
+@media (max-width: 1023x) {
+	.sticky-sidebar {
+		transform: translateY(75%) translateX(-100%);
+		padding-right: 3rem;
+		background-color: red;
+		align-self: 2rem;
+		top: 0;
+	}
+}
+
+.sticky-sidebar-icon {
+	width: 30px;
+	margin: 0 3px;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 50%;
+}
+
+.sticky-sidebar-tableau {
+	padding-left: 2.25rem;
+	padding-right: 1.9rem;
+	padding-bottom: 0.6rem;
+
+	filter: grayscale(1);
+}
+
+.sticky-sidebar-linkedin {
+	padding-left: 2.25rem;
+	padding-right: 2.25rem;
+	filter: grayscale(1);
+}
+
+.sticky-sidebar-github {
+	padding-left: 2.25rem;
+	padding-right: 1.85rem;
+	padding-bottom: 0.25rem;
+}
+
+.sticky-sidebar-email {
+	padding-left: 2.25rem;
+	padding-right: 2.25rem;
+}
+
+.sticky-sidebar-tableau:hover {
+	filter: grayscale(0);
+}
+
+.sticky-sidebar-linkedin:hover {
+	filter: grayscale(0);
+}
+
+.sticky-sidebar-github:hover path {
+	fill: #171515;
+}
+
+.sticky-sidebar-email:hover path {
+	fill: #db4437;
+}
+
+.path {
+	stroke-dasharray: 1450;
+	stroke-dashoffset: 1450;
+	pointer-events: none;
+	animation: animateDash 2.5s linear forwards;
+}
+
+.path-base {
+	fill-opacity: 0;
+	animation: animateFillOpacity 2s linear forwards;
+	animation-delay: 2.35s;
+}
+
+@keyframes animateDash {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes animateFillOpacity {
+	to {
+		fill-opacity: 0.7;
+	}
+}
+
