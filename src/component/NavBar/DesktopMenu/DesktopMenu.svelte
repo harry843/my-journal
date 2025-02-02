@@ -1,7 +1,7 @@
 <script>
-	import classNames from 'classnames';
 	import Sun from '../../Icons/Sun.svelte';
 	import Moon from '../../Icons/Moon.svelte';
+	import LanguageDropdown from '../LanguageDropdown/LanguageDropdown.svelte';
 	
 	export let darkMode;
 	export let handleSwitchDarkMode;
@@ -35,5 +35,6 @@
 				{/if}
 			</div>
 		</label>
+		<LanguageDropdown />
 	</ul>
 </div>

@@ -6,7 +6,7 @@
 	import Loading from '../component/Loading/Loading.svelte';
 	import DataFetcher from '../component/Sanity/DataFetcher.svelte';
 	import genImageUrl from '../component/Sanity/utils/genImageUrl';
-	import { blogData } from '../stores/stores';
+	import { blogData, currentLanguage } from '../stores/stores';
 
 	// Find whether the current URL is local host or staging
 	let isLocalOrStaging =
@@ -14,80 +14,84 @@
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
-	  // List of Spanish-speaking country shortcodes (ISO 3166-1 alpha-2)
-	  const spanishSpeakingCountries = [
-    "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "SV", "GQ", "GT", "HN",
-    "MX", "NI", "PA", "PY", "PE", "ES", "UY", "VE"
-  ];
+	// List of Spanish-speaking country shortcodes (ISO 3166-1 alpha-2)
+	const spanishSpeakingCountries = [
+		'AR',
+		'BO',
+		'CL',
+		'CO',
+		'CR',
+		'CU',
+		'DO',
+		'EC',
+		'SV',
+		'GQ',
+		'GT',
+		'HN',
+		'MX',
+		'NI',
+		'PA',
+		'PY',
+		'PE',
+		'ES',
+		'UY',
+		'VE'
+	];
 
-  let language = 'en'; // Default language
-  let getAllPosts;
 
-  // Function to build the GROQ query
-  function buildQuery(language: string) {
-    return `
-      *[_type == 'personal' && language == '${language}']
+
+	// Function to build the GROQ query
+	function buildQuery(lang) {
+		return `
+      *[_type == 'personal' && language == '${lang}']
       | order(_createdAt desc) {
         title, "slug":slug.current, "imageUrl":mainImage.image.asset._ref, "imageCaption":mainImage.caption, "imageAlt":mainImage.alt, feature, tags, content
       }
     `;
-  }
+	}
 
-  // Fetch user's country and set language
-  async function detectUserCountry() {
-    try {
-      const response = await fetch("https://ipapi.co/json/");
-      const ipData = await response.json();
-      console.log("User Country Code:", ipData.country_code);
+	let getAllPosts = buildQuery($currentLanguage)
 
-      // Set language based on country code
-      if (spanishSpeakingCountries.includes(ipData.country_code)) {
-        language = 'es';
-      } else {
-        language = 'en';
-      }
-
-      getAllPosts = buildQuery(language);
-    } catch (error) {
-      console.error("Error fetching user country:", error);
-      language = 'en'; // Default to English if error occurs
-      getAllPosts = buildQuery(language);
+	$: {
+        getAllPosts = buildQuery($currentLanguage);
     }
-  }
 
-  // Function to change language manually
-  function changeLanguage(newLanguage: string) {
-    language = newLanguage;
-    getAllPosts = buildQuery(language);
-  }
+	// Fetch user's country and set language
+	async function detectUserCountry() {
+		try {
+			const response = await fetch('https://ipapi.co/json/');
+			const ipData = await response.json();
+			console.log('User Country Code:', ipData.country_code);
 
-  // Set default language on mount
-  onMount(() => {
-    detectUserCountry();
-  });
+			// Set language based on country code
+			if (spanishSpeakingCountries.includes(ipData.country_code)) {
+				currentLanguage.set('es');
+			} else {
+				currentLanguage.set('en');
+			}
+			console.log($currentLanguage)
+			getAllPosts = buildQuery($currentLanguage);
+		} catch (error) {
+			console.error('Error fetching user country:', error);
+			currentLanguage.set('en'); // Default to English if error occurs
+			getAllPosts = buildQuery($currentLanguage);
+		}
+	}
 
-  // Function to handle data from DataFetcher
-  function handleData(data) {
-    blogData.set(data);
-  }
+	// Set default language on mount
+	onMount(() => {
+		detectUserCountry();
+	});
+
+	// Function to handle data from DataFetcher
+	function handleData(data) {
+		blogData.set(data);
+	}
 </script>
 
 <section class="flex flex-col items-center justify-center">
 	<!-- Language Selection Buttons -->
-	<div class="flex space-x-4 my-4">
-		<button
-			on:click={() => changeLanguage('en')}
-			class="flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 text-gray-700"
-		>
-			<span class="fi fi-gb mr-2" /> English
-		</button>
-		<button
-			on:click={() => changeLanguage('es')}
-			class="flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 text-gray-700"
-		>
-			<span class="fi fi-es mr-2" /> Español
-		</button>
-	</div>
+	<!-- <LanguageDropdown currentLanguage={$currentLanguage} /> -->
 
 	<!-- DataFetcher Component -->
 	<DataFetcher query={getAllPosts} onData={handleData} store={blogData} />
