@@ -51,10 +51,12 @@
 		$page.url.href.includes('localhost') || $page.url.href.includes('staging.harrykelleher.com');
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
+
+console.log(data.slugs)
 </script>
 
 <svelte:head>
-	<title>Blog | {data.blog[0].title}</title>
+	<title>{data.blog[0].title}</title>
 	<meta property="og:title" content={data.blog[0].title} />
 	<meta name="article:published_time" content={data.blog[0]._updatedAt} />
 	<meta property="og:image" content={genImageUrl(data.blog[0].imageUrl, dataset, '?fit=max')} />

@@ -38,8 +38,6 @@
 		'VE'
 	];
 
-
-
 	// Function to build the GROQ query
 	function buildQuery(lang) {
 		return `
@@ -50,11 +48,11 @@
     `;
 	}
 
-	let getAllPosts = buildQuery($currentLanguage)
+	let getAllPosts = buildQuery($currentLanguage);
 
 	$: {
-        getAllPosts = buildQuery($currentLanguage);
-    }
+		getAllPosts = buildQuery($currentLanguage);
+	}
 
 	// Fetch user's country and set language
 	async function detectUserCountry() {
@@ -69,7 +67,7 @@
 			} else {
 				currentLanguage.set('en');
 			}
-			console.log($currentLanguage)
+			console.log($currentLanguage);
 			getAllPosts = buildQuery($currentLanguage);
 		} catch (error) {
 			console.error('Error fetching user country:', error);
