@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import BlogPostCard from '../component/Card/BlogPostCard/BlogPostCard.svelte';
 	import averageReadingTime from '../component/Card/BlogPostCard/averageReadingTime';
 	import Loading from '../component/Loading/Loading.svelte';
@@ -13,29 +14,62 @@
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
-	let language = 'en'; // Default language
-	let getAllPosts = buildQuery(language);
+	  // List of Spanish-speaking country shortcodes (ISO 3166-1 alpha-2)
+	  const spanishSpeakingCountries = [
+    "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "SV", "GQ", "GT", "HN",
+    "MX", "NI", "PA", "PY", "PE", "ES", "UY", "VE"
+  ];
 
-	// Function to build the GROQ query
-	function buildQuery(language: string) {
-		return `
-		*[_type == 'personal' && language == '${language}']
-		| order(_createdAt desc) {
-		  title, "slug":slug.current, "imageUrl":mainImage.image.asset._ref, "imageCaption":mainImage.caption, "imageAlt":mainImage.alt, feature, tags, content
-		}
-	  `;
-	}
+  let language = 'en'; // Default language
+  let getAllPosts;
 
-	// Function to change the language and update the query
-	function changeLanguage(newLanguage: string) {
-		language = newLanguage;
-		getAllPosts = buildQuery(language); // Update the query dynamically
-	}
+  // Function to build the GROQ query
+  function buildQuery(language: string) {
+    return `
+      *[_type == 'personal' && language == '${language}']
+      | order(_createdAt desc) {
+        title, "slug":slug.current, "imageUrl":mainImage.image.asset._ref, "imageCaption":mainImage.caption, "imageAlt":mainImage.alt, feature, tags, content
+      }
+    `;
+  }
 
-	// Function to handle data from DataFetcher
-	function handleData(data) {
-		blogData.set(data);
-	}
+  // Fetch user's country and set language
+  async function detectUserCountry() {
+    try {
+      const response = await fetch("https://ipapi.co/json/");
+      const ipData = await response.json();
+      console.log("User Country Code:", ipData.country_code);
+
+      // Set language based on country code
+      if (spanishSpeakingCountries.includes(ipData.country_code)) {
+        language = 'es';
+      } else {
+        language = 'en';
+      }
+
+      getAllPosts = buildQuery(language);
+    } catch (error) {
+      console.error("Error fetching user country:", error);
+      language = 'en'; // Default to English if error occurs
+      getAllPosts = buildQuery(language);
+    }
+  }
+
+  // Function to change language manually
+  function changeLanguage(newLanguage: string) {
+    language = newLanguage;
+    getAllPosts = buildQuery(language);
+  }
+
+  // Set default language on mount
+  onMount(() => {
+    detectUserCountry();
+  });
+
+  // Function to handle data from DataFetcher
+  function handleData(data) {
+    blogData.set(data);
+  }
 </script>
 
 <section class="flex flex-col items-center justify-center">
@@ -59,7 +93,7 @@
 	<DataFetcher query={getAllPosts} onData={handleData} store={blogData} />
 
 	<!-- Blog Posts -->
-	{#if $blogData.length === 0}
+	{#if $blogData.length === 0 || !$blogData}
 		<Loading />
 	{:else}
 		<div class="grid grid-cols-2 gap-6">

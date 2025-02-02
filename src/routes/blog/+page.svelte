@@ -16,7 +16,7 @@
 	let language = 'en';
 
 	const getAllPosts = `
-	  *[_type == 'personal' && language == 'en']
+	  *[_type == 'personal' && language == '${language}']
 	  | order(_createdAt desc) {
 		  title, "slug":slug.current, "imageUrl":mainImage.image.asset._ref, "imageCaption":mainImage.caption, "imageAlt":mainImage.alt, feature, tags, content
 	  }
