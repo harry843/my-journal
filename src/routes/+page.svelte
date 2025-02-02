@@ -103,7 +103,7 @@
 		<div class="grid grid-cols-2 gap-6">
 			{#each $blogData as post, index}
 				<BlogPostCard
-					slug={'blog/' + post.slug}
+					slug={post.slug}
 					title={post.title}
 					coverImage={genImageUrl(post.imageUrl, dataset, '?fit=max')}
 					altText={post.imageAlt}
