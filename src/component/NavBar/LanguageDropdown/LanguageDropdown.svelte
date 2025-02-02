@@ -14,7 +14,7 @@
 	<!-- Dropdown Button -->
 	<button
 		on:click={() => isOpen.update((n) => !n)}
-		class="flex items-center px-2 py-1 border border-gray-300 rounded-md bg-white hover:bg-gray-100 text-gray-700 justify-between"
+		class="flex items-center px-2 py-1 border border-gray-300 dark:border-gray-800 rounded-md bg-white hover:bg-gray-100 text-gray-700 justify-between"
 	>
 		{#each $languages as lang}
 			{#if lang.code === $currentLanguage}
@@ -41,11 +41,11 @@
 
 	<!-- Dropdown Menu -->
 	{#if $isOpen}
-		<div class="absolute mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-md">
+		<div class="absolute mt-2 w-28 bg-white border border-gray-300 rounded-md shadow-md">
 			{#each $languages as lang}
 				<button
 					on:click={() => changeLanguage(lang.code)}
-					class="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-gray-700"
+					class="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-gray-700 font-medium text-sm"
 				>
 					<span class="{lang.flag} mr-2" />
 					{lang.name}
