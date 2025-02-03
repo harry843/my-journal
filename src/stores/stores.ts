@@ -7,6 +7,7 @@ export const userHasNavigated = writable<boolean>(false);
 
 export const blogData = writable([]);
 export const slugData = writable([]);
+export const translationSlugs = writable([]);
 export const homeData = writable([]);
 
 export const currentLanguage = writable('en');

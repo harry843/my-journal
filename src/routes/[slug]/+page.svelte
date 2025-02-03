@@ -18,7 +18,7 @@
 	import Loading from '../../component/Loading/Loading.svelte';
 	import Eye from '../../component/Icons/Eye.svelte';
 	import { get } from 'svelte/store';
-	import { slugData } from '../../stores/stores';
+	import { slugData, translationSlugs } from '../../stores/stores';
 	import genImageUrl from '../../component/Sanity/utils/genImageUrl';
 	import BlogMenu from '../../component/Blog/Menu/BlogMenu.svelte';
 	import CustomOrderedList from '../../component/Blog/PortableText/CustomOrderedList.svelte';
@@ -38,6 +38,10 @@
 		if (!cachedData) {
 			slugData.update((store) => {
 				store[slug] = data.blog;
+				return store;
+			});
+            translationSlugs.update((store) => {
+				store[slug] = data.slugs;
 				return store;
 			});
 		}
