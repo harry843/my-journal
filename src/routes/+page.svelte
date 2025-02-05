@@ -92,8 +92,8 @@
 	<DataFetcher query={getAllPosts} onData={handleData} store={blogData} />
 
 	<div class="flex flex-col gap-y-3 py-6 items-start justify-start border border-t-slate-200 border-b-slate-200 dark:border-t-slate-600 dark:border-b-slate-600 border-r-0 border-l-0 w-full">
-		<div class="font-serif px-2.5 py-1 border border-slate-300 text-sm italic rounded-full">Personal Blog</div>
-		<div class="font-customHeading text-3xl font-bold ">Stories and Reflections</div>
+		<div class="font-serif px-2.5 py-1 border border-slate-300 text-sm italic rounded-full">{$currentLanguage === 'es' ? "Blog Personal" : "Personal Blog"}</div>
+		<div class="font-customHeading text-3xl font-bold ">{$currentLanguage === 'es' ? "Relatos y Reflexiones" : "Stories and Reflections"}</div>
 	</div>
 
 	<!-- Blog Posts -->
