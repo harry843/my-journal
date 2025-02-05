@@ -3,8 +3,6 @@
 	import { browser } from '$app/environment';
 	import { PUBLIC_APP_PASSWORD } from '$env/static/public';
 	import { isAuthenticated } from '../../stores/stores';
-	import FaEye from 'svelte-icons/fa/FaEye.svelte';
-	import FaEyeSlash from 'svelte-icons/fa/FaEyeSlash.svelte';
 
 	let passwordInput = '';
 	let isCheckingAuth = true;
@@ -103,7 +101,10 @@
 					{/if}
 				</button>
 			</div>
-			<button on:click={checkPassword} class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded w-full">
+			<button
+				on:click={checkPassword}
+				class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded w-full"
+			>
 				Submit
 			</button>
 		</div>
