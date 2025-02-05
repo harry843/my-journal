@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '../Card.svelte';
 	import Tag from '../../Tag/Tag.svelte';
-	import Eye from '../../Icons/Eye.svelte';
+	import { currentLanguage } from '../../../stores/stores';
 
 	export let title: string | null = null;
 	export let coverImage: string | undefined = undefined;
@@ -12,9 +12,11 @@
 	export let readingTime: string | null = null;
 	export let additionalClass: string | undefined = undefined;
 	export let index: number | undefined = undefined;
+
+	$: urlParams = '?lang=' + $currentLanguage;
 </script>
 
-<Card href="/{slug}" target="_self" {additionalClass} {index}>
+<Card href="/{slug}{urlParams}" target="_self" {additionalClass} {index}>
 	<div class="" slot="image">
 		<img class={index === 0 ? 'items-center' : 'max-h-[300px] '} src={coverImage} alt={altText} />
 	</div>

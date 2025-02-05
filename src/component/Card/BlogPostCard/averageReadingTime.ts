@@ -1,26 +1,28 @@
-export default function averageReadingTime(array: JSON) {
+export default function averageReadingTime(array: any[], language: string): string {
 	let totalCharacters = 0;
-	// Average Characters per Word including spaces and punctuation
 	const averageCharactersInWord = 6;
 	const averageWordsPerMinute = 238;
 
 	array.forEach((item) => {
-		if (item.children) {
-			item.children.forEach((child: { text: string | any[] }) => {
-				totalCharacters += child.text.length;
+		if (Array.isArray(item.children)) {
+			item.children.forEach((child: { text: string }) => {
+				if (typeof child.text === "string") {
+					totalCharacters += child.text.length;
+				}
 			});
-		} else if (item.text) {
+		}
+		if (typeof item.text === "string") {
 			totalCharacters += item.text.length;
-		} else if (item.caption) {
+		}
+		if (typeof item.caption === "string") {
 			totalCharacters += item.caption.length;
 		}
 	});
 
-	if (Math.round(totalCharacters / averageCharactersInWord / averageWordsPerMinute) === 0) {
-		return '1 min read';
-	}
+	const readingTime = Math.max(1, Math.round(totalCharacters / averageCharactersInWord / averageWordsPerMinute));
 
-	return `${Math.round(
-		totalCharacters / averageCharactersInWord / averageWordsPerMinute
-	)} min read`;
+	if (language === "es") {
+		return `Tiempo de lectura: ${readingTime} min`;
+	}
+	return `${readingTime} min read`;
 }

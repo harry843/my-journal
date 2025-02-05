@@ -1,47 +1,42 @@
 <script lang="ts">
 	import { writable, get } from 'svelte/store';
-	import { tick } from 'svelte';
 	import { currentLanguage, languages, translationSlugs } from '../../../stores/stores';
 	import { page } from '$app/stores';
 
 	const isOpen = writable(false);
 
-	// Reactive slug detection
-	$: currentSlug = get(page).url.pathname.replace(/^\/|\/$/g, '');
-	$: isSlugPage = !!currentSlug && !currentSlug.includes('/');
+	// // Reactive slug detection
+	// $: currentSlug = get(page).url.pathname.replace(/^\/|\/$/g, '');
+	// $: isSlugPage = !!currentSlug && !currentSlug.includes('/');
 
-	async function changeLanguage(lang: string) {
-		if (lang === get(currentLanguage)) {
+	function changeLanguage(lang: string) {
+		const currentPage = get(page);
+		const currentSlug = currentPage.url.pathname.split('/').pop(); // Get the last part of the URL
+
+		// Check if we're on the home page
+		const isHomePage = currentPage.url.pathname === '/';
+
+		if (isHomePage) {
+			// If on the home page, just update the store and fire the API request
+			currentLanguage.set(lang);
 			isOpen.set(false);
 			return;
 		}
 
-		if (isSlugPage) {
-			const translations = get(translationSlugs)[currentSlug];
+		// If on a slug page, get the translated slug
+		const translations = get(translationSlugs)[currentSlug] || [];
+		const translatedEntry = translations.find(entry => entry.language === lang);
 
-			if (translations) {
-				const targetSlugObj = translations.find(slugObj => slugObj.language === lang);
-
-				if (targetSlugObj) {
-					// Open new tab with correct slug and language in the URL
-					const newUrl = `/${targetSlugObj.slug}?lang=${lang}`;
-					window.open(newUrl, '_blank');
-
-					// Close dropdown
-					isOpen.set(false);
-					return;
-				}
-			}
+		if (translatedEntry) {
+			const newUrl = `/${translatedEntry.slug}?lang=${lang}`;
+			window.open(newUrl, '_blank'); // Open translated page in new tab
 		}
-
-		// Default behavior for home page
+		
+		// Update language store
 		currentLanguage.set(lang);
 		isOpen.set(false);
 	}
 </script>
-
-
-
 
 <div class="relative">
 	<!-- Dropdown Button -->

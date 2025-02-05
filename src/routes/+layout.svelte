@@ -5,8 +5,9 @@
 	import { navigating } from '$app/stores';
 	import { userHasNavigated } from '../stores/stores';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { currentLanguage } from '../stores/stores'; // adjust the path if needed
+	import Footer from '../component/NavBar/Footer/Footer.svelte';
+	import PasswordModal from '../component/PasswordModal/PasswordModal.svelte';
 
 	$: outerWidth = 0;
 
@@ -35,9 +36,14 @@
 <Analytics />
 
 <NavBar />
-
+<PasswordModal />
 <section
 	class="px-2 xs:px-4 md:px-16 lg:px-32 xl:px-44 2xl:px-56 pt-20 py-4 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 dark:text-white"
 >
+
 	<slot />
 </section>
+
+{#if outerWidth > 0}
+	<Footer />
+{/if}

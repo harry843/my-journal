@@ -16,9 +16,8 @@
 	import dateformat from 'dateformat';
 	import { PortableText } from '@portabletext/svelte';
 	import Loading from '../../component/Loading/Loading.svelte';
-	import Eye from '../../component/Icons/Eye.svelte';
 	import { get } from 'svelte/store';
-	import { slugData, translationSlugs } from '../../stores/stores';
+	import { slugData, translationSlugs, currentLanguage, isAuthenticated } from '../../stores/stores';
 	import genImageUrl from '../../component/Sanity/utils/genImageUrl';
 	import BlogMenu from '../../component/Blog/Menu/BlogMenu.svelte';
 	import CustomOrderedList from '../../component/Blog/PortableText/CustomOrderedList.svelte';
@@ -40,7 +39,7 @@
 				store[slug] = data.blog;
 				return store;
 			});
-            translationSlugs.update((store) => {
+			translationSlugs.update((store) => {
 				store[slug] = data.slugs;
 				return store;
 			});
@@ -56,7 +55,7 @@
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
-console.log(data.slugs)
+	console.log(data.slugs);
 </script>
 
 <svelte:head>
@@ -74,11 +73,11 @@ console.log(data.slugs)
 
 <svelte:window bind:innerWidth={screenWidth} />
 
-{#if data.blog[0] === undefined}
+{#if data.blog[0] === undefined && $isAuthenticated}
 	<div class="flex h-screen items-center justify-center">
 		<Loading />
 	</div>
-{:else}
+{:else if $isAuthenticated}
 	<section class="mx-2 sm:mx-5 md:mx-[15%] lg:mx-[18%] xl:mx-[22%]">
 		{#if Object.keys(data.blog[0]).length > 0}
 			{#if data.blog[0].title !== undefined}
@@ -90,18 +89,33 @@ console.log(data.slugs)
 			<div class="flex flex-row justify-center items-center">
 				<img src="/blog-profile-2.jpg" class="h-14 mr-2 rounded-full" alt="Harry Kelleher" />
 				<div class="flex flex-col justify-center text-center gap-y-1 font-customParagraph">
-					<div class="text-sm text-opacity-80">by Harry Kelleher</div>
-					<div class="flex flex-row text-sm gap-x-1 xxs:gap-x-1.5 text-opacity-80">
-						{#if data.blog[0]._updatedAt !== undefined}
-							<div>
-								{dateformat(data.blog[0]._updatedAt, 'UTC:dd mmm yyyy')}
-							</div>
-						{/if}
-						<div>&#x2022;</div>
-						{#if data.blog[0].content !== undefined}
-							<div>{averageReadingTime(data.blog[0].content)}</div>
-						{/if}
+					<div class="text-sm text-opacity-80">
+						{$currentLanguage == 'es' ? 'escrito por' : 'written by'} Harry Kelleher
 					</div>
+					{#if $currentLanguage === 'en'}
+						<div class="flex flex-row text-sm gap-x-1 xxs:gap-x-1.5 text-opacity-80">
+							{#if data.blog[0]._updatedAt !== undefined}
+								<div>
+									{dateformat(data.blog[0]._updatedAt, 'UTC:dd mmm yyyy')}
+								</div>
+							{/if}
+							<div>&#x2022;</div>
+							{#if data.blog[0].content !== undefined}
+								<div>{averageReadingTime(data.blog[0].content, $currentLanguage)}</div>
+							{/if}
+						</div>
+					{:else if $currentLanguage === 'es'}
+						<div class="flex flex-col gap-y-1 text-sm text-opacity-80">
+							<div>
+								{averageReadingTime(data.blog[0].content, $currentLanguage)}
+							</div>
+							{#if data.blog[0]._updatedAt !== undefined}
+								<div>
+									{dateformat(data.blog[0]._updatedAt, 'UTC:dd mmm yyyy')}
+								</div>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			</div>
 

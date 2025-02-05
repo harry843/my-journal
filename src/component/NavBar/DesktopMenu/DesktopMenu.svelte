@@ -26,7 +26,7 @@
 			/>
 			<!-- Toggle Background -->
 			<div
-				class="w-7 h-[15px] bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[7px] after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:w-3 after:h-3 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-500"
+				class="w-7 h-[15px] bg-slate-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[7px] after:start-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:w-3 after:h-3 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-500"
 			/>
 			<!-- Icons -->
 			<div class="ml-3 flex items-center">
