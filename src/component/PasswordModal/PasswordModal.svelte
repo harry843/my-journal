@@ -2,11 +2,12 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { PUBLIC_APP_PASSWORD } from '$env/static/public';
-	import { isAuthenticated } from '../../stores/stores';
+	import { isAuthenticated, currentLanguage } from '../../stores/stores';
 
 	let passwordInput = '';
 	let isCheckingAuth = true;
 	let showPassword = false;
+    $: passwordText = $currentLanguage === 'es' ? 'Contraseña incorrecta. Inténtelo de nuevo.' : 'Incorrect password. Try again.'
 
 	// Check localStorage for authentication status
 	onMount(() => {
@@ -22,7 +23,7 @@
 			isAuthenticated.set(true);
 			localStorage.setItem('authenticated', 'true');
 		} else {
-			alert('Incorrect password. Try again.');
+			alert(passwordText);
 			passwordInput = '';
 		}
 	}
@@ -41,7 +42,7 @@
 {#if !isCheckingAuth && !$isAuthenticated}
 	<div class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center">
 		<div class="bg-white p-6 rounded-lg shadow-xl text-center w-80">
-			<h2 class="text-lg font-bold mb-4">Enter Password</h2>
+			<h2 class="text-lg font-bold mb-4">{$currentLanguage === 'es' ? "Introduzca la contraseña" : "Enter Password"}</h2>
 			<div class="relative w-full">
 				<!-- Separate inputs to avoid dynamic type binding issue -->
 				{#if showPassword}
@@ -57,7 +58,7 @@
 						type="password"
 						bind:value={passwordInput}
 						class="w-full p-2 border rounded mb-4 pr-10"
-						placeholder="Enter password"
+						placeholder={$currentLanguage === 'es' ? "Introduzca la contraseña" : "Enter password"}
 						on:keydown={handleKeyDown}
 					/>
 				{/if}
@@ -105,7 +106,7 @@
 				on:click={checkPassword}
 				class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded w-full"
 			>
-				Submit
+            {$currentLanguage === 'es' ? "Enviar" : "Submit"}
 			</button>
 		</div>
 	</div>
