@@ -1,6 +1,9 @@
 {
-	"name": "my-website",
+	"name": "my-journal",
 	"version": "0.0.1",
+	"engines": {
+		"node": "18.x"
+	  },
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
