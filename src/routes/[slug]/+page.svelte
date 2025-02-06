@@ -90,7 +90,7 @@
 				<img src="/blog-profile-2.jpg" class="h-14 mr-2 rounded-full" alt="Harry Kelleher" />
 				<div class="flex flex-col justify-center text-center gap-y-1 font-customParagraph">
 					<div class="text-sm text-opacity-80">
-						{$currentLanguage == 'es' ? 'escrito por' : 'written by'} Harry Kelleher
+						{$currentLanguage == 'es' ? 'Escrito por' : 'Written by'} Harry Kelleher
 					</div>
 					{#if $currentLanguage === 'en'}
 						<div class="flex flex-row text-sm gap-x-1 xxs:gap-x-1.5 text-opacity-80">
