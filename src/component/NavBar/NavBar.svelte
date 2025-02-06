@@ -77,7 +77,7 @@
 			<img src="blog-profile-head.png" class="h-10 w-10" alt="logo" />
 			{#if width != 0 && width >= 375}
 				<span
-					class="px-3 self-center text-2xl font-semibold whitespace-nowrap font-customHeading dark:text-white hover:underline"
+					class="px-3 self-center text-xl xs:text-2xl font-semibold whitespace-nowrap font-customHeading dark:text-white hover:underline"
 					>Harry Kelleher</span
 				>
 			{/if}
