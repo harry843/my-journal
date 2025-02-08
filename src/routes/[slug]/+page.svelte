@@ -17,11 +17,17 @@
 	import { PortableText } from '@portabletext/svelte';
 	import Loading from '../../component/Loading/Loading.svelte';
 	import { get } from 'svelte/store';
-	import { slugData, translationSlugs, currentLanguage, isAuthenticated } from '../../stores/stores';
+	import {
+		slugData,
+		translationSlugs,
+		currentLanguage,
+		isAuthenticated
+	} from '../../stores/stores';
 	import genImageUrl from '../../component/Sanity/utils/genImageUrl';
 	import BlogMenu from '../../component/Blog/Menu/BlogMenu.svelte';
 	import CustomOrderedList from '../../component/Blog/PortableText/CustomOrderedList.svelte';
 	import CustomOrderedListItem from '../../component/Blog/PortableText/CustomOrderedListItem.svelte';
+	import Subscribe from '../../component/Subscribe/Subscribe.svelte';
 
 	export let data;
 
@@ -177,6 +183,12 @@
 					value={data.blog[0].content}
 					onMissingComponent={false}
 				/>
+
+				<hr
+					class="my-16 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400"
+				/>
+
+				<Subscribe />
 			{/if}
 		{:else}
 			<div class="text-red-500">An error occurred while fetching data. Please try again later.</div>
