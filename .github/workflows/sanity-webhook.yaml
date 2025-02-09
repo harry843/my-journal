@@ -1,0 +1,35 @@
+name: Sanity Blog → Buttondown Email
+
+on:
+  repository_dispatch:
+    types: [sanity_blog_published]
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Send notification email via Buttondown
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          REPO_PAT: ${{ secrets.GITHUB_PAT }}
+          BLOG_TITLE: ${{ github.event.client_payload.title }}
+          BLOG_URL: ${{ github.event.client_payload.url }}
+          BLOG_TAGS: ${{ github.event.client_payload.tags }}
+          BLOG_LANGUAGE: ${{ github.event.client_payload.language }}
+          BLOG_DOCUMENT_ID: ${{ github.event.client_payload.documentId }}
+
+        run: |
+          curl -X POST https://api.buttondown.email/v1/emails \
+          -H "Authorization: Token $BUTTONDOWN_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "body": "New Blog Post: '${BLOG_TITLE}' - Read it here: '${BLOG_URL}.'",
+                "subject": "New Blog Post: '${BLOG_TITLE}'",
+                "publish_date": "now",
+                "tags": ${BLOG_TAGS},
+                "language": ${BLOG_LANGUAGE},
+                "documentId": ${BLOG_DOCUMENT_ID}
+              }'
