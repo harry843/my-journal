@@ -12,7 +12,7 @@ jobs:
         id: retrieve_webhook
         run: |
           echo "## Retrieving blog post data from Sanity webhook"
-          WEBHOOK_DATA=$(curl -s -X POST ${{ github.event.webhook.url }} | jq -r '.')  # Assuming this is a POST request to retrieve the webhook data.
+          WEBHOOK_DATA=$(curl -s -X POST ${{ github.event.client_payload }} | jq -r '.')  # Assuming this is a POST request to retrieve the webhook data.
           echo "::set-output name=webhook_data::${WEBHOOK_DATA}"
 
   retrieve-subscribers:
