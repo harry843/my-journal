@@ -45,9 +45,9 @@ jobs:
 
           ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
 
-          # Output the JSON to GitHub Actions environment variable
-          echo "english_post=${ENGLISH_POST}" >> "$GITHUB_ENV"
-          echo "english_post=${ENGLISH_POST}" >> "$GITHUB_OUTPUT"
+          # Set environment variable (with proper escaping)
+          echo "english_post=$(echo "$ENGLISH_POST" | jq -c '.' | sed 's/"/\\"/g')" >> "$GITHUB_ENV"
+          echo "english_post=$(echo "$ENGLISH_POST" | jq -c '.' | sed 's/"/\\"/g')" >> "$GITHUB_OUTPUT"
           
           # Debug: Print the value being set
           echo "Value being set for english_post: ${ENGLISH_POST}"
@@ -71,9 +71,9 @@ jobs:
 
           SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "es")')
 
-          # Output the JSON to GitHub Actions environment variable
-          echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_ENV"
-          echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_OUTPUT"
+          # Set environment variable (with proper escaping)
+          echo "spanish_post=$(echo "$SPANISH_POST" | jq -c '.' | sed 's/"/\\"/g')" >> "$GITHUB_ENV"
+          echo "spanish_post=$(echo "$SPANISH_POST" | jq -c '.' | sed 's/"/\\"/g')" >> "$GITHUB_OUTPUT"
 
           # Debug: Print the value being set
           echo "Value being set for spanish_post: ${SPANISH_POST}"
