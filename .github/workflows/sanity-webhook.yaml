@@ -1,35 +1,268 @@
-name: Sanity Blog → Buttondown Email
+name: "Send New Blog Post Notification"
 
 on:
-  repository_dispatch:
-    types: [sanity_blog_published]
+  webhook:
+    url: https://my-journal-2s4ik8ugo-harry843s-projects.vercel.app/sanity-webhook
 
 jobs:
-  send-email:
+  retrieve-webhook-data:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Send notification email via Buttondown
-        env:
-          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
-          REPO_PAT: ${{ secrets.GITHUB_PAT }}
-          BLOG_TITLE: ${{ github.event.client_payload.title }}
-          BLOG_URL: ${{ github.event.client_payload.url }}
-          BLOG_TAGS: ${{ github.event.client_payload.tags }}
-          BLOG_LANGUAGE: ${{ github.event.client_payload.language }}
-          BLOG_DOCUMENT_ID: ${{ github.event.client_payload.documentId }}
-
+      - name: "Retrieve Webhook Data from Sanity"
+        id: retrieve_webhook
         run: |
-          curl -X POST https://api.buttondown.email/v1/emails \
-          -H "Authorization: Token $BUTTONDOWN_API_KEY" \
+          echo "## Retrieving blog post data from Sanity webhook"
+          WEBHOOK_DATA=$(curl -s -X POST ${{ github.event.webhook.url }} | jq -r '.')  # Assuming this is a POST request to retrieve the webhook data.
+          echo "::set-output name=webhook_data::${WEBHOOK_DATA}"
+
+  retrieve-subscribers:
+    runs-on: ubuntu-latest
+    needs: retrieve-webhook-data
+    steps:
+      - name: "Retrieve Active Subscribers from Buttondown"
+        id: retrieve_subscribers
+        run: |
+          echo "## Retrieving active subscribers from Buttondown"
+          SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq -r '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
+          echo "::set-output name=subscribers_data::${SUBSCRIBERS_DATA}"
+
+  
+  
+  filter-webhook-data:
+    runs-on: ubuntu-latest
+    needs: retrieve-webhook-data
+    steps:
+      - name: "Filter Webhook Data for English Content"
+        id: filter_english_content
+        run: |
+          echo "## Filtering English blog post from webhook data"
+          ENGLISH_POST=$(echo '${{ needs.retrieve-webhook-data.outputs.webhook_data }}' | jq -r '[.[] | select(.language == "en")][0]')
+          echo "::set-output name=english_post::${ENGLISH_POST}"
+
+      - name: "Filter Webhook Data for Spanish Content"
+        id: filter_spanish_content
+        run: |
+          echo "## Filtering Spanish blog post from webhook data"
+          SPANISH_POST=$(echo '${{ needs.retrieve-webhook-data.outputs.webhook_data }}' | jq -r '[.[] | select(.language == "es")][0]')
+          echo "::set-output name=spanish_post::${SPANISH_POST}"
+
+  
+  send-english-emails:
+    runs-on: ubuntu-latest
+    needs: [filter-webhook-data, retrieve-subscribers]
+    steps:
+      - name: "Filter English Subscribers"
+        id: filter_english
+        run: |
+          echo "## Filtering English subscribers"
+          ENGLISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r '[.[] | select(.language == null or .language == "en") | .email] | join(",")'
+          echo "::set-output name=english_emails::${ENGLISH_SUBSCRIBERS}"
+
+      - name: "Send Email to English Subscribers"
+        run: |
+          echo "## Sending email to English subscribers"
+          curl -X POST "https://api.buttondown.email/v1/emails" \
+          -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
-                "body": "New Blog Post: '${BLOG_TITLE}' - Read it here: '${BLOG_URL}.'",
-                "subject": "New Blog Post: '${BLOG_TITLE}'",
-                "publish_date": "now",
-                "tags": ${BLOG_TAGS},
-                "language": ${BLOG_LANGUAGE},
-                "documentId": ${BLOG_DOCUMENT_ID}
-              }'
+            "subject": "New Post: {{needs.filter-webhook.outputs.english_post.title}}",
+            "from": "harry-kelleher@buttondown.email",
+            "to": "${{ steps.send-english-emails.outputs.english_emails }}",
+            "html_body": "
+              <!DOCTYPE html>
+              <html lang=\"en\">
+              <head>
+                <meta charset=\"UTF-8\">
+                <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                <title>New Blog Post</title>
+                <style>
+                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+                  body {
+                    font-family: 'Inter', sans-serif;
+                    background-color: #f8f9fa;
+                    color: #333;
+                    text-align: center;
+                    padding: 40px 0;
+                  }
+
+                  .card-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 20px;
+                  }
+
+                  .card {
+                    max-width: 500px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+                    overflow: hidden;
+                    text-decoration: none;
+                    transition: transform 0.2s ease-in-out;
+                  }
+
+                  .card:hover {
+                    transform: scale(1.03);
+                  }
+
+                  .card img {
+                    width: 100%;
+                    height: auto;
+                    border-bottom: 1px solid #ddd;
+                  }
+
+                  .card-content {
+                    padding: 20px;
+                  }
+
+                  .card-title {
+                    font-size: 20px;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    color: #222;
+                  }
+
+                  .card-description {
+                    font-size: 16px;
+                    font-weight: 400;
+                    color: #555;
+                    line-height: 1.5;
+                  }
+
+                  .footer {
+                    margin-top: 30px;
+                    font-size: 14px;
+                    color: #777;
+                  }
+                </style>
+              </head>
+              <body>
+
+                <div class=\"card-container\">
+                  <a href=\"{{needs.filter-webhook.outputs.english_post.url}}\" class=\"card\">
+                    <img src=\"{{needs.filter-webhook.outputs.english_post.imageUrl}}\" alt=\"Blog Image\">
+                    <div class=\"card-content\">
+                      <div class=\"card-title\">{{needs.filter-webhook.outputs.english_post.title}}</div>
+                      <div class=\"card-description\">{{needs.filter-webhook.outputs.english_post.feature}}</div>
+                    </div>
+                  </a>
+                </div>
+
+                <p class=\"footer\">You're receiving this email because you subscribed to updates. <br></p>
+
+              </body>
+              </html>
+            "
+          }'
+
+  send-spanish-emails:
+    runs-on: ubuntu-latest
+    needs: [filter-webhook-data, retrieve-subscribers]
+    steps:
+      - name: "Filter Spanish Subscribers"
+        id: filter_spanish
+        run: |
+          echo "## Filtering Spanish subscribers (language == 'es')"
+          SPANISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r '[.[] | select(.language == "es") | .email] | join(",")'
+          echo "::set-output name=spanish_emails::${SPANISH_SUBSCRIBERS}"
+
+      - name: "Send Email to Spanish Subscribers"
+        run: |
+          echo "## Sending email to Spanish subscribers"
+          curl -X POST "https://api.buttondown.email/v1/emails" \
+          -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "subject": "Nuevo: {{needs.filter-webhook-data.outputs.spanish_post.title}}",
+            "from": "harry-kelleher@buttondown.email",
+            "to": "${{ steps.send-spanish-emails.outputs.spanish_emails }}",
+            "html_body": "
+              <!DOCTYPE html>
+              <html lang=\"es\">
+              <head>
+                <meta charset=\"UTF-8\">
+                <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                <title>Nuevo Blog Publicado</title>
+                <style>
+                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+                  body {
+                    font-family: 'Inter', sans-serif;
+                    background-color: #f8f9fa;
+                    color: #333;
+                    text-align: center;
+                    padding: 40px 0;
+                  }
+
+                  .card-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 20px;
+                  }
+
+                  .card {
+                    max-width: 500px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+                    overflow: hidden;
+                    text-decoration: none;
+                    transition: transform 0.2s ease-in-out;
+                  }
+
+                  .card:hover {
+                    transform: scale(1.03);
+                  }
+
+                  .card img {
+                    width: 100%;
+                    height: auto;
+                    border-bottom: 1px solid #ddd;
+                  }
+
+                  .card-content {
+                    padding: 20px;
+                  }
+
+                  .card-title {
+                    font-size: 20px;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    color: #222;
+                  }
+
+                  .card-description {
+                    font-size: 16px;
+                    font-weight: 400;
+                    color: #555;
+                    line-height: 1.5;
+                  }
+
+                  .footer {
+                    margin-top: 30px;
+                    font-size: 14px;
+                    color: #777;
+                  }
+                </style>
+              </head>
+              <body>
+
+                <div class=\"card-container\">
+                  <a href=\"{{needs.filter-webhook-data.outputs.spanish_post.url}}\" class=\"card\">
+                    <img src=\"{{needs.filter-webhook-data.outputs.spanish_post.imageUrl}}\" alt=\"Blog Image\">
+                    <div class=\"card-content\">
+                      <div class=\"card-title\">{{needs.filter-webhook-data.outputs.spanish_post.title}}</div>
+                      <div class=\"card-description\">{{needs.filter-webhook-data.outputs.spanish_post.feature}}</div>
+                    </div>
+                  </a>
+                </div>
+
+                <p class=\"footer\">Estás recibiendo este correo porque te suscribiste a actualizaciones. <br></p>
+
+              </body>
+              </html>
+            "
+          }'
