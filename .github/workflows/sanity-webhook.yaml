@@ -5,6 +5,16 @@ on:
     types: [sanity_blog_published]
 
 jobs:
+  # retrieve-webhook-data:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: "Retrieve Webhook Data from Sanity"
+  #       id: retrieve_webhook
+  #       run: |
+  #         echo "## Retrieving blog post data from Sanity webhook"
+  #         WEBHOOK_DATA=$(curl -s -X POST ${{ github.event.client_payload }} | jq -r '.')  # Assuming this is a POST request to retrieve the webhook data.
+  #         echo "::set-output name=webhook_data::${WEBHOOK_DATA}"
+
   retrieve-subscribers:
     runs-on: ubuntu-latest
     steps:
@@ -32,8 +42,8 @@ jobs:
         id: filter_english_content
         run: |
           echo "## Filtering English blog post from webhook data"
-          
-          PAYLOAD_JSON="${{ toJson(github.event.client_payload) }}"
+
+          PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
 
           # Determine if payload is an array or an object
           if echo "$PAYLOAD_JSON" | jq -e 'type == "array"' > /dev/null; then
@@ -52,8 +62,8 @@ jobs:
         id: filter_spanish_content
         run: |
           echo "## Filtering Spanish blog post from webhook data"
-          
-          PAYLOAD_JSON="${{ toJson(github.event.client_payload) }}"
+
+          PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
 
           if echo "$PAYLOAD_JSON" | jq -e 'type == "array"' > /dev/null; then
             SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c '[.[] | select(.language == "es")][0]')
@@ -89,7 +99,7 @@ jobs:
           -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
-            "subject": "New Post: {{needs.filter-webhook-data.outputs.english_post.title}}",
+            "subject": "New Post: {{needs.filter-webhook.outputs.english_post.title}}",
             "from": "harry-kelleher@buttondown.email",
             "to": "${{ steps.send-english-emails.outputs.english_emails }}",
             "html_body": "
@@ -165,11 +175,11 @@ jobs:
               <body>
 
                 <div class=\"card-container\">
-                  <a href=\"{{needs.filter-webhook-data.outputs.english_post.url}}\" class=\"card\">
-                    <img src=\"{{needs.filter-webhook-data.outputs.english_post.imageUrl}}\" alt=\"Blog Image\">
+                  <a href=\"{{needs.filter-webhook.outputs.english_post.url}}\" class=\"card\">
+                    <img src=\"{{needs.filter-webhook.outputs.english_post.imageUrl}}\" alt=\"Blog Image\">
                     <div class=\"card-content\">
-                      <div class=\"card-title\">{{needs.filter-webhook-data.outputs.english_post.title}}</div>
-                      <div class=\"card-description\">{{needs.filter-webhook-data.outputs.english_post.feature}}</div>
+                      <div class=\"card-title\">{{needs.filter-webhook.outputs.english_post.title}}</div>
+                      <div class=\"card-description\">{{needs.filter-webhook.outputs.english_post.feature}}</div>
                     </div>
                   </a>
                 </div>
@@ -213,7 +223,7 @@ jobs:
               <head>
                 <meta charset=\"UTF-8\">
                 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-                <title>Nuevo Blog</title>
+                <title>Nuevo Blog Publicado</title>
                 <style>
                   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
@@ -289,10 +299,11 @@ jobs:
                   </a>
                 </div>
 
-                <p class=\"footer\">Estás recibiendo este correo porque te suscribiste a las actualizaciones. <br></p>
+                <p class=\"footer\">Estás recibiendo este correo porque te suscribiste a actualizaciones. <br></p>
 
               </body>
               </html>
             "
           }'
           echo "## Spanish email sent to Spanish subscribers"
+
