@@ -1,8 +1,8 @@
 name: "Send New Blog Post Notification"
 
 on:
-  webhook:
-    url: https://my-journal-2s4ik8ugo-harry843s-projects.vercel.app/sanity-webhook
+  repository_dispatch:
+    types: [sanity_blog_published]
 
 jobs:
   retrieve-webhook-data:
