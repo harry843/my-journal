@@ -23,7 +23,7 @@ jobs:
           echo "Subscribers Data: $(cat subscribers_data.json)"
 
       - name: 'Upload Subscribers Data'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: subscribers_data
           path: subscribers_data.json
@@ -56,7 +56,7 @@ jobs:
           echo "Value being set for english_post: $(cat english_post.json)"
 
       - name: 'Upload English Post'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: english_post
           path: english_post.json
@@ -86,7 +86,7 @@ jobs:
           echo "Value being set for spanish_post: $(cat spanish_post.json)"
 
       - name: 'Upload Spanish Post'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: spanish_post
           path: spanish_post.json
@@ -96,13 +96,13 @@ jobs:
     needs: [filter-webhook-data, retrieve-subscribers]
     steps:
       - name: 'Download English Post'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: english_post
           path: .
 
       - name: 'Download Subscribers Data'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
@@ -145,13 +145,13 @@ jobs:
     needs: [filter-webhook-data, retrieve-subscribers]
     steps:
       - name: 'Download Spanish Post'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: spanish_post
           path: .
 
       - name: 'Download Subscribers Data'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
