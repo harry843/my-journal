@@ -36,7 +36,7 @@ jobs:
           echo "## Filtering English blog post from webhook data"
 
           PAYLOAD_JSON=$(echo '${{ toJson(github.event.client_payload) }}' | jq -c '.')
-          ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'if type == "array" then .[] | select(.language == "en") else . end')
+          SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
 
           # Output the JSON to GitHub Actions environment variable
           echo "english_post=${ENGLISH_POST}" >> "$GITHUB_ENV"
@@ -49,7 +49,7 @@ jobs:
           echo "## Filtering Spanish blog post from webhook data"
 
           PAYLOAD_JSON=$(echo '${{ toJson(github.event.client_payload) }}' | jq -c '.')
-          SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'if type == "array" then .[] | select(.language == "es") else . end')
+          SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "es")')
 
           # Output the JSON to GitHub Actions environment variable
           echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_ENV"
