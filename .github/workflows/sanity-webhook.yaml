@@ -91,100 +91,100 @@ jobs:
           name: spanish_post
           path: spanish_post.json
 
-send-english-emails:
-  runs-on: ubuntu-latest
-  needs: [filter-webhook-data, retrieve-subscribers]
-  steps:
-    - name: 'Download English Post'
-      uses: actions/download-artifact@v3
-      with:
-        name: english_post
-        path: .
+  send-english-emails:
+    runs-on: ubuntu-latest
+    needs: [filter-webhook-data, retrieve-subscribers]
+    steps:
+      - name: 'Download English Post'
+        uses: actions/download-artifact@v3
+        with:
+          name: english_post
+          path: .
 
-    - name: 'Download Subscribers Data'
-      uses: actions/download-artifact@v3
-      with:
-        name: subscribers_data
-        path: .
+      - name: 'Download Subscribers Data'
+        uses: actions/download-artifact@v3
+        with:
+          name: subscribers_data
+          path: .
 
-    - name: 'Read English Post'
-      id: read_english_post
-      run: |
-        echo "## Reading English post from file"
-        ENGLISH_POST=$(cat english_post.json)
-        echo "English Post: $ENGLISH_POST"
+      - name: 'Read English Post'
+        id: read_english_post
+        run: |
+          echo "## Reading English post from file"
+          ENGLISH_POST=$(cat english_post.json)
+          echo "English Post: $ENGLISH_POST"
 
-    - name: 'Filter English Subscribers'
-      id: filter_english
-      run: |
-        echo "## Filtering English subscribers"
-        SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-        ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == null or .language == "en") | .email' | tr '\n' ',')
-        echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> english_emails.txt
-        echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
+      - name: 'Filter English Subscribers'
+        id: filter_english
+        run: |
+          echo "## Filtering English subscribers"
+          SUBSCRIBERS_DATA=$(cat subscribers_data.json)
+          ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == null or .language == "en") | .email' | tr '\n' ',')
+          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> english_emails.txt
+          echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
-    - name: 'Send Email to English Subscribers'
-      run: |
-        echo "## Sending email to English subscribers"
-        ENGLISH_POST=$(cat english_post.json)
-        ENGLISH_EMAILS=$(cat english_emails.txt)
+      - name: 'Send Email to English Subscribers'
+        run: |
+          echo "## Sending email to English subscribers"
+          ENGLISH_POST=$(cat english_post.json)
+          ENGLISH_EMAILS=$(cat english_emails.txt)
 
-        curl -X POST "https://api.buttondown.email/v1/emails" \
-        -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "subject": "New Post: $(echo "$ENGLISH_POST" | jq -r '.title')",
-          "from": "harry-kelleher@buttondown.email",
-          "to": "'"$ENGLISH_EMAILS"'",
-          "html_body": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>New Blog Post</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');body{font-family:'Inter',sans-serif;background-color:#f8f9fa;color:#333;text-align:center;padding:40px 0;}.card-container{display:flex;justify-content:center;align-items:center;margin:20px;}.card{max-width:500px;background:white;border-radius:12px;box-shadow:0px 4px 12px rgba(0,0,0,0.1);overflow:hidden;text-decoration:none;transition:transform 0.2s ease-in-out;}.card:hover{transform:scale(1.03);}.card img{width:100%;height:auto;border-bottom:1px solid #ddd;}.card-content{padding:20px;}.card-title{font-size:20px;font-weight:600;margin-bottom:10px;color:#222;}.card-description{font-size:16px;font-weight:400;color:#555;line-height:1.5;}.footer{margin-top:30px;font-size:14px;color:#777;}</style></head><body><div class=\"card-container\"><a href=\"$(echo "$ENGLISH_POST" | jq -r '.url')\" class=\"card\"><img src=\"$(echo "$ENGLISH_POST" | jq -r '.imageUrl')\" alt=\"Blog Image\"><div class=\"card-content\"><div class=\"card-title\">$(echo "$ENGLISH_POST" | jq -r '.title')</div><div class=\"card-description\">$(echo "$ENGLISH_POST" | jq -r '.feature')</div></div></a></div><p class=\"footer\">You're receiving this email because you subscribed to updates. <br></p></body></html>"
-        }'
-        echo "## English email sent to English subscribers"
+          curl -X POST "https://api.buttondown.email/v1/emails" \
+          -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "subject": "New Post: $(echo "$ENGLISH_POST" | jq -r '.title')",
+            "from": "harry-kelleher@buttondown.email",
+            "to": "'"$ENGLISH_EMAILS"'",
+            "html_body": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>New Blog Post</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');body{font-family:'Inter',sans-serif;background-color:#f8f9fa;color:#333;text-align:center;padding:40px 0;}.card-container{display:flex;justify-content:center;align-items:center;margin:20px;}.card{max-width:500px;background:white;border-radius:12px;box-shadow:0px 4px 12px rgba(0,0,0,0.1);overflow:hidden;text-decoration:none;transition:transform 0.2s ease-in-out;}.card:hover{transform:scale(1.03);}.card img{width:100%;height:auto;border-bottom:1px solid #ddd;}.card-content{padding:20px;}.card-title{font-size:20px;font-weight:600;margin-bottom:10px;color:#222;}.card-description{font-size:16px;font-weight:400;color:#555;line-height:1.5;}.footer{margin-top:30px;font-size:14px;color:#777;}</style></head><body><div class=\"card-container\"><a href=\"$(echo "$ENGLISH_POST" | jq -r '.url')\" class=\"card\"><img src=\"$(echo "$ENGLISH_POST" | jq -r '.imageUrl')\" alt=\"Blog Image\"><div class=\"card-content\"><div class=\"card-title\">$(echo "$ENGLISH_POST" | jq -r '.title')</div><div class=\"card-description\">$(echo "$ENGLISH_POST" | jq -r '.feature')</div></div></a></div><p class=\"footer\">You're receiving this email because you subscribed to updates. <br></p></body></html>"
+          }'
+          echo "## English email sent to English subscribers"
 
-send-spanish-emails:
-  runs-on: ubuntu-latest
-  needs: [filter-webhook-data, retrieve-subscribers]
-  steps:
-    - name: 'Download Spanish Post'
-      uses: actions/download-artifact@v3
-      with:
-        name: spanish_post
-        path: .
+  send-spanish-emails:
+    runs-on: ubuntu-latest
+    needs: [filter-webhook-data, retrieve-subscribers]
+    steps:
+      - name: 'Download Spanish Post'
+        uses: actions/download-artifact@v3
+        with:
+          name: spanish_post
+          path: .
 
-    - name: 'Download Subscribers Data'
-      uses: actions/download-artifact@v3
-      with:
-        name: subscribers_data
-        path: .
+      - name: 'Download Subscribers Data'
+        uses: actions/download-artifact@v3
+        with:
+          name: subscribers_data
+          path: .
 
-    - name: 'Read Spanish Post'
-      id: read_spanish_post
-      run: |
-        echo "## Reading Spanish post from file"
-        SPANISH_POST=$(cat spanish_post.json)
-        echo "Spanish Post: $SPANISH_POST"
+      - name: 'Read Spanish Post'
+        id: read_spanish_post
+        run: |
+          echo "## Reading Spanish post from file"
+          SPANISH_POST=$(cat spanish_post.json)
+          echo "Spanish Post: $SPANISH_POST"
 
-    - name: 'Filter Spanish Subscribers'
-      id: filter_spanish
-      run: |
-        echo "## Filtering Spanish subscribers (language == 'es')"
-        SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-        SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == "es") | .email' | tr '\n' ',')
-        echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> spanish_emails.txt
-        echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
+      - name: 'Filter Spanish Subscribers'
+        id: filter_spanish
+        run: |
+          echo "## Filtering Spanish subscribers (language == 'es')"
+          SUBSCRIBERS_DATA=$(cat subscribers_data.json)
+          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == "es") | .email' | tr '\n' ',')
+          echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> spanish_emails.txt
+          echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
 
-    - name: 'Send Email to Spanish Subscribers'
-      run: |
-        echo "## Sending email to Spanish subscribers"
-        SPANISH_POST=$(cat spanish_post.json)
-        SPANISH_EMAILS=$(cat spanish_emails.txt)
+      - name: 'Send Email to Spanish Subscribers'
+        run: |
+          echo "## Sending email to Spanish subscribers"
+          SPANISH_POST=$(cat spanish_post.json)
+          SPANISH_EMAILS=$(cat spanish_emails.txt)
 
-        curl -X POST "https://api.buttondown.email/v1/emails" \
-        -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "subject": "Nuevo: $(echo "$SPANISH_POST" | jq -r '.title')",
-          "from": "harry-kelleher@buttondown.email",
-          "to": "'"$SPANISH_EMAILS"'",
-          "html_body": "<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Nuevo Blog Publicado</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');body{font-family:'Inter',sans-serif;background-color:#f8f9fa;color:#333;text-align:center;padding:40px 0;}.card-container{display:flex;justify-content:center;align-items:center;margin:20px;}.card{max-width:500px;background:white;border-radius:12px;box-shadow:0px 4px 12px rgba(0,0,0,0.1);overflow:hidden;text-decoration:none;transition:transform 0.2s ease-in-out;}.card:hover{transform:scale(1.03);}.card img{width:100%;height:auto;border-bottom:1px solid #ddd;}.card-content{padding:20px;}.card-title{font-size:20px;font-weight:600;margin-bottom:10px;color:#222;}.card-description{font-size:16px;font-weight:400;color:#555;line-height:1.5;}.footer{margin-top:30px;font-size:14px;color:#777;}</style></head><body><div class=\"card-container\"><a href=\"$(echo "$SPANISH_POST" | jq -r '.url')\" class=\"card\"><img src=\"$(echo "$SPANISH_POST" | jq -r '.imageUrl')\" alt=\"Blog Image\"><div class=\"card-content\"><div class=\"card-title\">$(echo "$SPANISH_POST" | jq -r '.title')</div><div class=\"card-description\">$(echo "$SPANISH_POST" | jq -r '.feature')</div></div></a></div><p class=\"footer\">Estás recibiendo este correo porque te suscribiste a actualizaciones. <br></p></body></html>"
-        }'
-        echo "## Spanish email sent to Spanish subscribers"
+          curl -X POST "https://api.buttondown.email/v1/emails" \
+          -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "subject": "Nuevo: $(echo "$SPANISH_POST" | jq -r '.title')",
+            "from": "harry-kelleher@buttondown.email",
+            "to": "'"$SPANISH_EMAILS"'",
+            "html_body": "<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Nuevo Blog Publicado</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');body{font-family:'Inter',sans-serif;background-color:#f8f9fa;color:#333;text-align:center;padding:40px 0;}.card-container{display:flex;justify-content:center;align-items:center;margin:20px;}.card{max-width:500px;background:white;border-radius:12px;box-shadow:0px 4px 12px rgba(0,0,0,0.1);overflow:hidden;text-decoration:none;transition:transform 0.2s ease-in-out;}.card:hover{transform:scale(1.03);}.card img{width:100%;height:auto;border-bottom:1px solid #ddd;}.card-content{padding:20px;}.card-title{font-size:20px;font-weight:600;margin-bottom:10px;color:#222;}.card-description{font-size:16px;font-weight:400;color:#555;line-height:1.5;}.footer{margin-top:30px;font-size:14px;color:#777;}</style></head><body><div class=\"card-container\"><a href=\"$(echo "$SPANISH_POST" | jq -r '.url')\" class=\"card\"><img src=\"$(echo "$SPANISH_POST" | jq -r '.imageUrl')\" alt=\"Blog Image\"><div class=\"card-content\"><div class=\"card-title\">$(echo "$SPANISH_POST" | jq -r '.title')</div><div class=\"card-description\">$(echo "$SPANISH_POST" | jq -r '.feature')</div></div></a></div><p class=\"footer\">Estás recibiendo este correo porque te suscribiste a actualizaciones. <br></p></body></html>"
+          }'
+          echo "## Spanish email sent to Spanish subscribers"
