@@ -48,7 +48,13 @@ jobs:
           # Output the JSON to GitHub Actions environment variable
           echo "english_post=${ENGLISH_POST}" >> "$GITHUB_ENV"
           echo "english_post=${ENGLISH_POST}" >> "$GITHUB_OUTPUT"
-          echo "English Post: $english_post"
+          
+          # Debug: Print the value being set
+          echo "Value being set for english_post: ${ENGLISH_POST}"
+
+          # Debug: Verify the environment variable is set
+          echo "Verifying english_post in the same step:"
+          echo "english_post: $english_post"
 
       - name: 'Filter Webhook Data for Spanish Content'
         id: filter_spanish_content
@@ -68,7 +74,13 @@ jobs:
           # Output the JSON to GitHub Actions environment variable
           echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_ENV"
           echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_OUTPUT"
-          echo "Spanish Post: $spanish_post"
+
+          # Debug: Print the value being set
+          echo "Value being set for spanish_post: ${SPANISH_POST}"
+
+          # Debug: Verify the environment variable is set
+          echo "Verifying spanish_post in the same step:"
+          echo "spanish_post: $spanish_post"
 
   send-english-emails:
     runs-on: ubuntu-latest
