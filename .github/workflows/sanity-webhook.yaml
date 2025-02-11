@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "## Retrieving active subscribers from Buttondown"
           SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq -r '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
-          echo "::set-output name=subscribers_data::${SUBSCRIBERS_DATA}"
+          echo "subscribers_data=${SUBSCRIBERS_DATA}" >> $GITHUB_OUTPUT
 
   filter-webhook-data:
     runs-on: ubuntu-latest
@@ -34,7 +34,6 @@ jobs:
           echo "## Filtering English blog post from webhook data"
 
           PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
-          echo "Received Payload: $PAYLOAD_JSON"
 
           # Determine if payload is an array or an object
           if echo "$PAYLOAD_JSON" | jq -e 'type == "array"' > /dev/null; then
@@ -43,7 +42,9 @@ jobs:
             ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
           fi
 
-          echo "::set-output name=english_post::$ENGLISH_POST"
+          echo "english_post=${ENGLISH_POST}" >> $GITHUB_OUTPUT
+          echo "English Post: $ENGLISH_POST"
+
 
       - name: 'Filter Webhook Data for Spanish Content'
         id: filter_spanish_content
@@ -51,7 +52,6 @@ jobs:
           echo "## Filtering Spanish blog post from webhook data"
 
           PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
-          echo "Received Payload: $PAYLOAD_JSON"
 
           if echo "$PAYLOAD_JSON" | jq -e 'type == "array"' > /dev/null; then
             SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c '[.[] | select(.language == "es")][0]')
@@ -59,18 +59,23 @@ jobs:
             SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "es")')
           fi
 
-          echo "::set-output name=spanish_post::$SPANISH_POST"
+          echo "spanish_post=${SPANISH_POST}" >> $GITHUB_OUTPUT
+          echo "Spanish Post: ${SPANISH_POST}"
+
 
   send-english-emails:
     runs-on: ubuntu-latest
     needs: [filter-webhook-data, retrieve-subscribers]
+    if: ${{ needs.filter-webhook-data.outputs.english_post != '{}' && needs.filter-webhook-data.outputs.english_post != '' }}
     steps:
       - name: 'Filter English Subscribers'
         id: filter_english
         run: |
           echo "## Filtering English subscribers"
           ENGLISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == null or .language == "en") | .email] | join(",") elif type == "object" then if .language == null or .language == "en" then .email else "" end else empty end')
-          echo "::set-output name=english_emails::${ENGLISH_SUBSCRIBERS}"
+          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> $GITHUB_OUTPUT
+          echo "English Subscribers: ${ENGLISH_SUBSCRIBERS}"
+
 
       - name: 'Send Email to English Subscribers'
         run: |
@@ -170,17 +175,21 @@ jobs:
               </html>
             "
           }'
+          echo "## English email sent to English subscribers"
+
 
   send-spanish-emails:
     runs-on: ubuntu-latest
     needs: [filter-webhook-data, retrieve-subscribers]
+    if: ${{ needs.filter-webhook-data.outputs.spanish_post != '{}' && needs.filter-webhook-data.outputs.spanish_post != '' }}
     steps:
       - name: 'Filter Spanish Subscribers'
         id: filter_spanish
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
           SPANISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == "es") | .email] | join(",") elif type == "object" then if .language == "es" then .email else "" end else empty end')
-          echo "::set-output name=spanish_emails::${SPANISH_SUBSCRIBERS}"
+          echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> $GITHUB_OUTPUT
+          echo "Spanish Subscribers: ${SPANISH_SUBSCRIBERS}"
 
       - name: 'Send Email to Spanish Subscribers'
         run: |
@@ -280,3 +289,5 @@ jobs:
               </html>
             "
           }'
+          echo "## Spanish email sent to Spanish subscribers"
+
