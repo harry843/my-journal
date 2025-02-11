@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "## Retrieving active subscribers from Buttondown"
           SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq -r '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
-          echo "subscribers_data=${SUBSCRIBERS_DATA}" >> $GITHUB_OUTPUT
+          echo "subscribers_data=${SUBSCRIBERS_DATA}" >> "$GITHUB_OUTPUT"
 
   filter-webhook-data:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
             ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
           fi
 
-          echo "english_post=${ENGLISH_POST}" >> $GITHUB_OUTPUT
+          echo "english_post=${ENGLISH_POST}" >> "$GITHUB_OUTPUT"
           echo "English Post: $ENGLISH_POST"
 
 
@@ -59,7 +59,7 @@ jobs:
             SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "es")')
           fi
 
-          echo "spanish_post=${SPANISH_POST}" >> $GITHUB_OUTPUT
+          echo "spanish_post=${SPANISH_POST}" >> "$GITHUB_OUTPUT"
           echo "Spanish Post: ${SPANISH_POST}"
 
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           echo "## Filtering English subscribers"
           ENGLISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == null or .language == "en") | .email] | join(",") elif type == "object" then if .language == null or .language == "en" then .email else "" end else empty end')
-          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> $GITHUB_OUTPUT
+          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> "$GITHUB_OUTPUT"
           echo "English Subscribers: ${ENGLISH_SUBSCRIBERS}"
 
 
@@ -188,7 +188,7 @@ jobs:
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
           SPANISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == "es") | .email] | join(",") elif type == "object" then if .language == "es" then .email else "" end else empty end')
-          echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> $GITHUB_OUTPUT
+          echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> "$GITHUB_OUTPUT"
           echo "Spanish Subscribers: ${SPANISH_SUBSCRIBERS}"
 
       - name: 'Send Email to Spanish Subscribers'
