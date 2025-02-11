@@ -35,8 +35,15 @@ jobs:
         run: |
           echo "## Filtering English blog post from webhook data"
 
-          PAYLOAD_JSON=$(echo '${{ toJson(github.event.client_payload) }}' | jq -c '.')
-          SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
+          # Parse the payload into a JSON object
+          PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
+          PAYLOAD_JSON=$(echo "$PAYLOAD_JSON" | jq -c '.')
+
+          # Debug the payload and its type
+          echo "PAYLOAD_JSON: $PAYLOAD_JSON"
+          echo "PAYLOAD_JSON Type: $(echo "$PAYLOAD_JSON" | jq -c 'type')"
+
+          ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
 
           # Output the JSON to GitHub Actions environment variable
           echo "english_post=${ENGLISH_POST}" >> "$GITHUB_ENV"
@@ -48,7 +55,14 @@ jobs:
         run: |
           echo "## Filtering Spanish blog post from webhook data"
 
-          PAYLOAD_JSON=$(echo '${{ toJson(github.event.client_payload) }}' | jq -c '.')
+          # Parse the payload into a JSON object
+          PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
+          PAYLOAD_JSON=$(echo "$PAYLOAD_JSON" | jq -c '.')
+
+          # Debug the payload and its type
+          echo "PAYLOAD_JSON: $PAYLOAD_JSON"
+          echo "PAYLOAD_JSON Type: $(echo "$PAYLOAD_JSON" | jq -c 'type')"
+
           SPANISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "es")')
 
           # Output the JSON to GitHub Actions environment variable
