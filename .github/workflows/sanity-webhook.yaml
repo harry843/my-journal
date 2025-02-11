@@ -69,7 +69,7 @@ jobs:
         id: filter_english
         run: |
           echo "## Filtering English subscribers"
-          ENGLISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r '[.[] | select(.language == null or .language == "en") | .email] | join(",")'
+          ENGLISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == null or .language == "en") | .email] | join(",") elif type == "object" then if .language == null or .language == "en" then .email else "" end else empty end')
           echo "::set-output name=english_emails::${ENGLISH_SUBSCRIBERS}"
 
       - name: 'Send Email to English Subscribers'
@@ -179,7 +179,7 @@ jobs:
         id: filter_spanish
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
-          SPANISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r '[.[] | select(.language == "es") | .email] | join(",")'
+          SPANISH_SUBSCRIBERS=$(echo "${{ needs.retrieve-subscribers.outputs.subscribers_data }}" | jq -r 'if type == "array" then [.[] | select(.language == "es") | .email] | join(",") elif type == "object" then if .language == "es" then .email else "" end else empty end')
           echo "::set-output name=spanish_emails::${SPANISH_SUBSCRIBERS}"
 
       - name: 'Send Email to Spanish Subscribers'
