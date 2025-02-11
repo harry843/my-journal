@@ -21,18 +21,21 @@ jobs:
       - name: 'Retrieve Active Subscribers from Buttondown'
         id: retrieve_subscribers
         run: |
-          echo "## Retrieving active subscribers from Buttondown"
-          
-          # Make API request and format data with jq
-          SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
+        echo "## Retrieving active subscribers from Buttondown"
+        
+        # Make API request and format data with jq
+        SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
 
-          # Output the JSON to GitHub Actions environment variable
-          echo "subscribers_data=${SUBSCRIBERS_DATA}" >> "$GITHUB_ENV"
-          
-          # Alternatively, if you need to use this in subsequent steps, ensure you pass it correctly
-          echo "subscribers_data=${SUBSCRIBERS_DATA}" >> "$GITHUB_OUTPUT"
+        # Escape JSON for environment variable
+        ESCAPED_SUBSCRIBERS_DATA=$(echo "$SUBSCRIBERS_DATA" | jq -c '.' | sed 's/"/\\"/g')
 
-          echo "Subscribers Data: $subscribers_data"
+        # Set environment variable
+        echo "subscribers_data=$ESCAPED_SUBSCRIBERS_DATA" >> "$GITHUB_ENV"
+        
+        # Set output (for use in subsequent steps)
+        echo "subscribers_data=$ESCAPED_SUBSCRIBERS_DATA" >> "$GITHUB_OUTPUT"
+
+        echo "Subscribers Data: $ESCAPED_SUBSCRIBERS_DATA"
 
 
   filter-webhook-data:
