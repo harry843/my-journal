@@ -104,49 +104,48 @@ jobs:
       - name: 'Check if English Post Exists'
         id: check_english_post
         run: |
-          if [ -s english_post.json ]; then
-            echo "english_post_exists=true" >> $GITHUB_OUTPUT
+          if [[ -f "english_post.json" && -s "english_post.json" ]]; then
+            echo "english_post_exists=true" >> "$GITHUB_ENV"
           else
-            echo "english_post_exists=false" >> $GITHUB_OUTPUT
+            echo "english_post_exists=false" >> "$GITHUB_ENV"
           fi
 
       - name: 'Skip if English Post is Empty'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'false' }}
+        if: env.english_post_exists == 'false'
         run: |
           echo "## No English post found. Skipping job."
           exit 0
 
       - name: 'Download Subscribers Data'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: env.english_post_exists == 'true'
         uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
 
       - name: 'Read English Post'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: env.english_post_exists == 'true'
         id: read_english_post
         run: |
           echo "## Reading English post from file"
-          ENGLISH_POST=$(cat english_post.json)
-          echo "English Post: $ENGLISH_POST"
+          cat english_post.json
 
       - name: 'Filter English Subscribers'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: env.english_post_exists == 'true'
         id: filter_english
         run: |
           echo "## Filtering English subscribers"
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
           ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == "en" or .language == null) | .email' | tr '\n' ',' | sed 's/,$//')
-          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> english_emails.txt
+          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> "$GITHUB_ENV"
           echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
       - name: 'Send Email to English Subscribers'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: env.english_post_exists == 'true'
         run: |
           echo "## Sending email to English subscribers"
           ENGLISH_POST=$(cat english_post.json)
-          ENGLISH_EMAILS=$(cat english_emails.txt)
+          ENGLISH_EMAILS="$english_emails"
 
           # Construct the HTML body
           HTML_BODY=$(cat <<EOF
@@ -223,7 +222,8 @@ jobs:
             <p class="footer">You're receiving this email because you subscribed to updates. <br></p>
           </body>
           </html>
-          EOF)
+          EOF
+          )
 
           # Construct the JSON payload
           PAYLOAD=$(jq -n \
@@ -246,6 +246,7 @@ jobs:
 
           echo "## English email sent to English subscribers"
 
+
   send-spanish-emails:
     runs-on: ubuntu-latest
     needs: [filter-webhook-data, retrieve-subscribers]
@@ -259,21 +260,21 @@ jobs:
       - name: 'Check if Spanish Post Exists'
         id: check_spanish_post
         run: |
-          if [ -s spanish_post.json ]; then
-            echo "spanish_post_exists=true" >> $GITHUB_OUTPUT
+          if [[ -f "spanish_post.json" && -s "spanish_post.json" ]]; then
+            echo "spanish_post_exists=true" >> $GITHUB_ENV
           else
-            echo "spanish_post_exists=false" >> $GITHUB_OUTPUT
+            echo "spanish_post_exists=false" >> $GITHUB_ENV
           fi
 
       - name: 'Download Subscribers Data'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: env.spanish_post_exists == 'true'
         uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
 
       - name: 'Read Spanish Post'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: env.spanish_post_exists == 'true'
         id: read_spanish_post
         run: |
           echo "## Reading Spanish post from file"
@@ -281,7 +282,7 @@ jobs:
           echo "Spanish Post: $SPANISH_POST"
 
       - name: 'Filter Spanish Subscribers'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: env.spanish_post_exists == 'true'
         id: filter_spanish
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
@@ -291,7 +292,7 @@ jobs:
           echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
 
       - name: 'Send Email to Spanish Subscribers'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: env.spanish_post_exists == 'true'
         run: |
           echo "## Sending email to Spanish subscribers"
           SPANISH_POST=$(cat spanish_post.json)
