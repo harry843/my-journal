@@ -20,10 +20,10 @@ aria-label={ariaLabel}
 </p>
 
 <form
-    action="https://buttondown.com/api/emails/embed-subscribe/harry-kelleher"
+    action="https://buttondown.com/api/emails/embed-subscribe/harrys-journal"
     method="post"
     target="popupwindow"
-    onsubmit="window.open('https://buttondown.com/harry-kelleher', 'popupwindow')"
+    onsubmit="window.open('https://buttondown.com/harrys-journal', 'popupwindow')"
     class="embeddable-buttondown-form flex flex-col items-start w-full max-w-md"
 >
     <div class="flex flex-col xs:flex-row items-start justify-start gap-x-1">
