@@ -14,7 +14,7 @@ jobs:
           echo "## Retrieving active subscribers from Buttondown"
           
           # Make API request and format data with jq
-          SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq '[.results[] | select(.type != "unactivated") | {firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
+          SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq '[.results[] | select(.type != "unactivated") | {id: .id, firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
 
           # Save the output to a file
           echo "$SUBSCRIBERS_DATA" > subscribers_data.json
@@ -220,17 +220,22 @@ jobs:
           EOF
           )
 
-          # Construct the JSON payload
           PAYLOAD=$(jq -n \
-            --arg subject "New Post: $(echo "$ENGLISH_POST" | jq -r '.title')" \
-            --arg from "${{ secrets.FROM_EMAIL }}" \
-            --arg to "$ENGLISH_EMAILS" \
+            --arg subject "Nuevo: $(echo "$ENGLISH_POST" | jq -r '.title')" \
+            --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
+            --arg to "ENGLISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
+            --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
+            --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
             '{
               subject: $subject,
               from: $from,
               to: $to,
-              body: $html_body
+              body: $html_body,
+              headers: {
+                "List-Unsubscribe": $list_unsubscribe,
+                "List-Unsubscribe-Post": $list_unsubscribe_post
+              }
             }')
 
           # Send the email
@@ -370,17 +375,22 @@ jobs:
           </html>
           EOF)
 
-          # Construct the JSON payload
           PAYLOAD=$(jq -n \
             --arg subject "Nuevo: $(echo "$SPANISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$SPANISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
+            --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
+            --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
             '{
               subject: $subject,
               from: $from,
               to: $to,
-              body: $html_body
+              body: $html_body,
+              headers: {
+                "List-Unsubscribe": $list_unsubscribe,
+                "List-Unsubscribe-Post": $list_unsubscribe_post
+              }
             }')
 
           # Send the email
