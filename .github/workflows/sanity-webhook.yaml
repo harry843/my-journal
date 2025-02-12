@@ -101,14 +101,14 @@ jobs:
           name: english_post
           path: .
 
-    - name: 'Check if English Post Exists'
-      id: english_post
-      run: |
-        if [[ -f "english_post.json" && -s "english_post.json" ]]; then
-          echo "::set-output name=en_exists::true"
-        else
-          echo "::set-output name=en_exists::false"
-        fi
+      - name: 'Check if English Post Exists'
+        id: english_post
+        run: |
+          if [[ -f "english_post.json" && -s "english_post.json" ]]; then
+            echo "::set-output name=en_exists::true"
+          else
+            echo "::set-output name=en_exists::false"
+          fi
 
       - name: 'Download Subscribers Data'
         if: ${{ steps.english_post.outputs.en_exists == 'true' }}
