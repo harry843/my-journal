@@ -105,27 +105,32 @@ jobs:
         id: check_english_post
         run: |
           if [[ -f "english_post.json" && -s "english_post.json" ]]; then
-            echo "english_post_exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "english_post_exists=false" >> "$GITHUB_OUTPUT"
+            touch english_post_exists.txt  # Create marker file
+          fi
+
+      - name: 'Skip if English Post is Empty'
+        run: |
+          if [ ! -f english_post_exists.txt ]; then
+            echo "## No English post found. Skipping job."
+            exit 0
           fi
 
       - name: 'Download Subscribers Data'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: ${{ success() }}
         uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
 
       - name: 'Read English Post'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: ${{ success() }}
         id: read_english_post
         run: |
           echo "## Reading English post from file"
           cat english_post.json
 
       - name: 'Filter English Subscribers'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: ${{ success() }}
         id: filter_english
         run: |
           echo "## Filtering English subscribers"
@@ -135,7 +140,7 @@ jobs:
           echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
       - name: 'Send Email to English Subscribers'
-        if: ${{ steps.check_english_post.outputs.english_post_exists == 'true' }}
+        if: ${{ success() }}
         run: |
           echo "## Sending email to English subscribers"
           ENGLISH_POST=$(cat english_post.json)
@@ -255,20 +260,26 @@ jobs:
         id: check_spanish_post
         run: |
           if [[ -f "spanish_post.json" && -s "spanish_post.json" ]]; then
-            echo "spanish_post_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "spanish_post_exists=false" >> $GITHUB_OUTPUT
+            touch spanish_post_exists.txt  # Create marker file
+          fi
+
+    
+      - name: 'Skip if Spanish Post is Empty'
+        run: |
+          if [ ! -f spanish_post_exists.txt ]; then
+            echo "## No spanish post found. Skipping job."
+            exit 0
           fi
 
       - name: 'Download Subscribers Data'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: ${{ success() }}
         uses: actions/download-artifact@v4
         with:
           name: subscribers_data
           path: .
 
       - name: 'Read Spanish Post'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: ${{ success() }}
         id: read_spanish_post
         run: |
           echo "## Reading Spanish post from file"
@@ -276,7 +287,7 @@ jobs:
           echo "Spanish Post: $SPANISH_POST"
 
       - name: 'Filter Spanish Subscribers'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: ${{ success() }}
         id: filter_spanish
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
@@ -286,7 +297,7 @@ jobs:
           echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
 
       - name: 'Send Email to Spanish Subscribers'
-        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'true' }}
+        if: ${{ success() }}
         run: |
           echo "## Sending email to Spanish subscribers"
           SPANISH_POST=$(cat spanish_post.json)
