@@ -122,7 +122,7 @@ jobs:
         id: read_english_post
         run: |
           echo "## Reading English post from file"
-          echo "English post exists? - ${{ steps.english_post.outputs.exists }}"
+          echo "English post exists? - ${{ steps.english_post.outputs.en_exists }}"
           jq . english_post.json
 
       - name: 'Filter English Subscribers'
@@ -214,7 +214,6 @@ jobs:
                 </div>
               </a>
             </div>
-            <p class="footer">You're receiving this email because you subscribed to updates. <br></p>
           </body>
           </html>
           EOF
@@ -223,7 +222,7 @@ jobs:
           PAYLOAD=$(jq -n \
             --arg subject "Nuevo: $(echo "$ENGLISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
-            --arg to "ENGLISH_EMAILS" \
+            --arg to "$ENGLISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
             --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
@@ -264,6 +263,7 @@ jobs:
             echo "::set-output name=sp_exists::true"
           else
             echo "::set-output name=sp_exists::false"
+            exit 1 # force quit job
           fi
 
       - name: 'Download Subscribers Data'
@@ -278,8 +278,10 @@ jobs:
         id: read_spanish_post
         run: |
           echo "## Reading Spanish post from file"
-          SPANISH_POST=$(cat spanish_post.json)
-          echo "Spanish Post: $SPANISH_POST"
+          echo "Spanish post exists? - ${{ steps.spanish_post.outputs.sp_exists }}"
+
+          jq . spanish_post.json
+
 
       - name: 'Filter Spanish Subscribers'
         if: ${{ steps.spanish_post.outputs.sp_exists == 'true' }}
@@ -370,7 +372,6 @@ jobs:
                 </div>
               </a>
             </div>
-            <p class="footer">Estás recibiendo este correo porque te suscribiste a actualizaciones. <br></p>
           </body>
           </html>
           EOF)
