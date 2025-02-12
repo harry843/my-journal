@@ -223,14 +223,14 @@ jobs:
           # Construct the JSON payload
           PAYLOAD=$(jq -n \
             --arg subject "New Post: $(echo "$ENGLISH_POST" | jq -r '.title')" \
-            --arg from "harry-kelleher@buttondown.email" \
+            --arg from "${{ secrets.FROM_EMAIL }}" \
             --arg to "$ENGLISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
             '{
               subject: $subject,
               from: $from,
               to: $to,
-              html_body: $html_body
+              body: $html_body
             }')
 
           # Send the email
@@ -373,14 +373,14 @@ jobs:
           # Construct the JSON payload
           PAYLOAD=$(jq -n \
             --arg subject "Nuevo: $(echo "$SPANISH_POST" | jq -r '.title')" \
-            --arg from "harry-kelleher@buttondown.email" \
+            --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$SPANISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
             '{
               subject: $subject,
               from: $from,
               to: $to,
-              html_body: $html_body
+              body: $html_body
             }')
 
           # Send the email
