@@ -101,6 +101,21 @@ jobs:
           name: english_post
           path: .
 
+      - name: 'Check if English Post Exists'
+        id: check_english_post
+        run: |
+          if [ -s english_post.json ]; then
+            echo "english_post_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "english_post_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 'Skip if English Post is Empty'
+        if: ${{ steps.check_english_post.outputs.english_post_exists == 'false' }}
+        run: |
+          echo "## No English post found. Skipping job."
+          exit 0
+
       - name: 'Download Subscribers Data'
         uses: actions/download-artifact@v4
         with:
@@ -236,6 +251,21 @@ jobs:
         with:
           name: spanish_post
           path: .
+
+      - name: 'Check if Spanish Post Exists'
+        id: check_spanish_post
+        run: |
+          if [ -s spanish_post.json ]; then
+            echo "spanish_post_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "spanish_post_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 'Skip if Spanish Post is Empty'
+        if: ${{ steps.check_spanish_post.outputs.spanish_post_exists == 'false' }}
+        run: |
+          echo "## No Spanish post found. Skipping job."
+          exit 0
 
       - name: 'Download Subscribers Data'
         uses: actions/download-artifact@v4
