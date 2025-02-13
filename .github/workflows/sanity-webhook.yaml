@@ -36,24 +36,33 @@ jobs:
         run: |
           echo "## Filtering English blog post from webhook data"
 
-          # Parse the payload into a JSON object
+          # Parse the payload into a JSON object safely
           PAYLOAD_JSON='${{ toJson(github.event.client_payload) }}'
-          PAYLOAD_JSON=$(echo "$PAYLOAD_JSON" | jq -c '.')
 
-          # Check if payload is empty
-          if [ -z "$PAYLOAD_JSON" ]; then
-            echo "Payload is empty!"
+          # Ensure PAYLOAD_JSON is properly escaped for jq processing
+          PAYLOAD_JSON=$(echo "$PAYLOAD_JSON" | jq -c '.' || echo "")
+
+          # Check if payload is empty or invalid
+          if [[ -z "$PAYLOAD_JSON" || "$PAYLOAD_JSON" == "null" ]]; then
+            echo "Payload is empty or invalid!"
             exit 1
           fi
 
           # Filter for English content
           ENGLISH_POST=$(echo "$PAYLOAD_JSON" | jq -c 'select(.language == "en")')
 
+          # Ensure ENGLISH_POST is not empty
+          if [[ -z "$ENGLISH_POST" || "$ENGLISH_POST" == "null" ]]; then
+            echo "No English content found!"
+            exit 1
+          fi
+
           # Save the output to a file
           echo "$ENGLISH_POST" > english_post.json
 
           # Debug: Print the value being set
           echo "Value being set for english_post: $(cat english_post.json)"
+
 
       - name: 'Upload English Post'
         uses: actions/upload-artifact@v4
