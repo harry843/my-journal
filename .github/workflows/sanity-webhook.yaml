@@ -127,7 +127,7 @@ jobs:
   send-english-emails:
     runs-on: ubuntu-latest
     needs: [filter-webhook-data, retrieve-subscribers]
-    if: ${{ needs.filter-webhook-data.outputs.english_post_exists == 'true' }}  # Skip job if English post doesn't exist
+    if: ${{ needs.filter-webhook-data.outputs.english_post_exists == 'true' }} 
     steps:
       - name: 'Download English Post'
         uses: actions/download-artifact@v4
@@ -226,29 +226,20 @@ jobs:
               }
               /* Styling for Click Below text */
               .cta-text {
-                font-size: 16px;
-                font-weight: 500;
+                font-size: 15px;
+                font-weight: 400;
                 color: #333;
                 margin-top: 20px;
-                padding-bottom: 6px
-
-              }
-              /* Animated Arrow */
-              .arrow {
-                margin-top: 5px;
-                animation: bounce 1.5s infinite;
-              }
-              @keyframes bounce {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(8px); }
+                padding-bottom: 6px;
+                text-align: center;
               }
             </style>
           </head>
           <body>
 
-            <div class="card-title">A New Post Just Dropped!</div>
+            <div class="card-title" style="text-align: center;">A New Post Just Dropped!</div>
             
-            <div class="cta-text">Click the card below to read it</div>
+            <div class="cta-text">&#8595;</div>
 
             <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -400,28 +391,19 @@ jobs:
               /* Styling for Click Below text */
               .cta-text {
                 font-size: 16px;
-                font-weight: 500;
+                font-weight: 400;
+                text-align: center;
                 color: #333;
                 margin-top: 20px;
-                padding-bottom: 6px
-
-              }
-              /* Animated Arrow */
-              .arrow {
-                margin-top: 5px;
-                animation: bounce 1.5s infinite;
-              }
-              @keyframes bounce {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(8px); }
+                padding-bottom: 6px;
               }
             </style>
           </head>
           <body>
 
-            <div class="card-title">Acabo de Publicar un Nuevo Post!</div>
+            <div class="card-title" style="text-align: center;">Acabo de Publicar un Nuevo Post!</div>
             
-            <div class="cta-text">Haz click abajo para leerlo</div>
+            <div class="cta-text">&#8595;</div>
 
             <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
