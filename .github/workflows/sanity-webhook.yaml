@@ -124,7 +124,7 @@ jobs:
   send-english-emails:
     runs-on: ubuntu-latest
     needs: [filter-webhook-data, retrieve-subscribers]
-    if: ${{ needs.filter-webhook-data.outputs.english_post_exists == 'true' }}  # Skip job if English post doesn't exist
+    # if: ${{ needs.filter-webhook-data.outputs.english_post_exists == 'true' }}  # Skip job if English post doesn't exist
     steps:
       - name: 'Download English Post'
         uses: actions/download-artifact@v4
@@ -140,7 +140,10 @@ jobs:
 
       - name: 'Read English Post'
         run: |
+          echo "Does Spanish Post Exist? ${{ needs.filter-webhook-data.outputs.spanish_post_exists }}"
+
           echo "## Reading English post from file"
+          echo "English post exists: ${{ needs.filter-webhook-data.outputs.english_post_exists }}"
           jq . english_post.json
 
       - name: 'Filter English Subscribers'
