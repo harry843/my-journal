@@ -104,10 +104,11 @@ jobs:
       - name: 'Check if English Post Exists'
         id: english_post
         run: |
-          if [[ -f "english_post.json" && -s "english_post.json" ]]; then
+          if [[ -f "english_post.json" && -s "english_post.json" ]] && jq empty english_post.json >/dev/null 2>&1; then
             echo "::set-output name=en_exists::true"
           else
             echo "::set-output name=en_exists::false"
+            # exit 1 # force-quit job
           fi
 
       - name: 'Download Subscribers Data'
@@ -145,11 +146,11 @@ jobs:
           # Construct the HTML body
           HTML_BODY=$(cat <<EOF
           <!DOCTYPE html>
-          <html lang="en">
+          <html lang="es">
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>New Blog Post</title>
+            <title>New Blog Published</title>
             <style>
               @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
               body {
@@ -202,9 +203,36 @@ jobs:
                 font-size: 14px;
                 color: #777;
               }
+              /* Styling for Click Below text */
+              .cta-text {
+                font-size: 16px;
+                font-weight: 500;
+                color: #333;
+                margin-top: 20px;
+                padding-bottom: 6px
+
+              }
+              /* Animated Arrow */
+              .arrow {
+                margin-top: 5px;
+                animation: bounce 1.5s infinite;
+              }
+              @keyframes bounce {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(8px); }
+              }
             </style>
           </head>
           <body>
+
+            <div class="card-title">A New Post Just Dropped!</div>
+            
+            <div class="cta-text">Click the card below to read it</div>
+
+            <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
             <div class="card-container">
               <a href="$(echo "$ENGLISH_POST" | jq -r '.url')" class="card">
                 <img src="$(echo "$ENGLISH_POST" | jq -r '.imageUrl')" alt="Blog Image">
@@ -214,13 +242,15 @@ jobs:
                 </div>
               </a>
             </div>
+
           </body>
           </html>
+
           EOF
           )
 
           PAYLOAD=$(jq -n \
-            --arg subject "Nuevo: $(echo "$ENGLISH_POST" | jq -r '.title')" \
+            --arg subject "$(echo "$ENGLISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$ENGLISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
@@ -259,11 +289,11 @@ jobs:
       - name: 'Check if Spanish Post Exists'
         id: 'spanish_post'
         run: |
-          if [[ -f "spanish_post.json" && -s "spanish_post.json" ]]; then
+          if [[ -f "spanish_post.json" && -s "spanish_post.json" ]] && jq empty english_post.json >/dev/null 2>&1; then
             echo "::set-output name=sp_exists::true"
           else
             echo "::set-output name=sp_exists::false"
-            exit 1 # force quit job
+            # exit 1 # force quit job
           fi
 
       - name: 'Download Subscribers Data'
@@ -360,9 +390,36 @@ jobs:
                 font-size: 14px;
                 color: #777;
               }
+              /* Styling for Click Below text */
+              .cta-text {
+                font-size: 16px;
+                font-weight: 500;
+                color: #333;
+                margin-top: 20px;
+                padding-bottom: 6px
+
+              }
+              /* Animated Arrow */
+              .arrow {
+                margin-top: 5px;
+                animation: bounce 1.5s infinite;
+              }
+              @keyframes bounce {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(8px); }
+              }
             </style>
           </head>
           <body>
+
+            <div class="card-title">Acabo de Publicar un Nuevo Post!</div>
+            
+            <div class="cta-text">Haz click abajo para leerlo</div>
+
+            <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
             <div class="card-container">
               <a href="$(echo "$SPANISH_POST" | jq -r '.url')" class="card">
                 <img src="$(echo "$SPANISH_POST" | jq -r '.imageUrl')" alt="Blog Image">
@@ -372,12 +429,14 @@ jobs:
                 </div>
               </a>
             </div>
+
           </body>
           </html>
+
           EOF)
 
           PAYLOAD=$(jq -n \
-            --arg subject "Nuevo: $(echo "$SPANISH_POST" | jq -r '.title')" \
+            --arg subject "$(echo "$SPANISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$SPANISH_EMAILS" \
             --arg html_body "$HTML_BODY" \
