@@ -153,10 +153,14 @@ jobs:
         run: |
           echo "## Filtering English subscribers"
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-          ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == "en" or .language == null) | .email' | tr '\n' ',' | sed 's/,$//')
-          echo "english_emails=${ENGLISH_SUBSCRIBERS}" >> english_emails.txt
-          echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
+          # Extract email addresses for Spanish subscribers and format them as a JSON array
+          ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es") | .email]')
+
+          # Save only the JSON array to a file
+          echo "$ENGLISH_SUBSCRIBERS" >> english_emails.txt
+
+          echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
       - name: 'Send Email to English Subscribers'
         run: |
@@ -241,10 +245,6 @@ jobs:
             
             <div class="cta-text">&#8595;</div>
 
-            <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-
             <div class="card-container">
               <a href="$(echo "$ENGLISH_POST" | jq -r '.url')" class="card">
                 <img src="$(echo "$ENGLISH_POST" | jq -r '.imageUrl')" alt="Blog Image">
@@ -265,6 +265,7 @@ jobs:
             --arg subject "$(echo "$ENGLISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$ENGLISH_EMAILS" \
+            --arg description "A new post just dropped in Harry's Journal! Follow the link in the email to read." \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
             --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
@@ -272,6 +273,7 @@ jobs:
               subject: $subject,
               from: $from,
               to: $to,
+              description: $description,
               body: $html_body,
               headers: {
                 "List-Unsubscribe": $list_unsubscribe,
@@ -316,10 +318,17 @@ jobs:
         id: filter_spanish
         run: |
           echo "## Filtering Spanish subscribers (language == 'es')"
+          # Read the subscribers data from the JSON file
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '.[] | select(.language == "es") | .email' | tr '\n' ',' | sed 's/,$//')
-          echo "spanish_emails=${SPANISH_SUBSCRIBERS}" >> spanish_emails.txt
+
+          # Extract email addresses for Spanish subscribers and format them as a JSON array
+          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es") | .email]')
+
+          # Save only the JSON array to a file
+          echo "$SPANISH_SUBSCRIBERS" >> spanish_emails.txt
+
           echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
+
 
       - name: 'Send Email to Spanish Subscribers'
         run: |
@@ -404,10 +413,6 @@ jobs:
             
             <div class="cta-text">&#8595;</div>
 
-            <svg class="arrow" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3V21M12 21L5 14M12 21L19 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-
             <div class="card-container">
               <a href="$(echo "$SPANISH_POST" | jq -r '.url')" class="card">
                 <img src="$(echo "$SPANISH_POST" | jq -r '.imageUrl')" alt="Blog Image">
@@ -427,6 +432,7 @@ jobs:
             --arg subject "$(echo "$SPANISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --arg to "$SPANISH_EMAILS" \
+            --arg description "¡Acabo de publicar un nuevo post en el Journal de Harry! Sigue el enlace del correo electrónico para leerlo." \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
             --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
@@ -434,6 +440,7 @@ jobs:
               subject: $subject,
               from: $from,
               to: $to,
+              description: $description,
               body: $html_body,
               headers: {
                 "List-Unsubscribe": $list_unsubscribe,
