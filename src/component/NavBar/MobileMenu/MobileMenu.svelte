@@ -2,13 +2,14 @@
 	import Moon from '../../Icons/Moon.svelte';
 	import Sun from '../../Icons/Sun.svelte';
 	import LanguageDropdown from '../LanguageDropdown/LanguageDropdown.svelte';
+	import SubscribeButton from '../SubscribeButton/SubscribeButton.svelte';
 	export let darkMode;
 	export let handleSwitchDarkMode;
+	export let width;
 </script>
 
-<ul
-	class="flex rounded-lg bg-gray-50 space-x-4 dark:bg-gray-900  dark:border-gray-700"
->
+<ul class="flex rounded-lg space-x-3 dark:bg-gray-900 dark:border-gray-700">
+	<SubscribeButton {width} />
 	<LanguageDropdown />
 
 	<label class="relative flex items-center justify-center cursor-pointer">

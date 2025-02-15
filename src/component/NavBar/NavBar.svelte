@@ -84,9 +84,9 @@
 		</a>
 		<div class="flex flex-row items-center gap-x-5">
 			{#if width > 767}
-				<DesktopMenu {darkMode} {handleSwitchDarkMode} />
+				<DesktopMenu {darkMode} {handleSwitchDarkMode} {width} />
 			{:else if width != 0}
-				<MobileMenu {darkMode} {handleSwitchDarkMode} />
+				<MobileMenu {darkMode} {handleSwitchDarkMode} {width} />
 			{/if}
 			
 		</div>
