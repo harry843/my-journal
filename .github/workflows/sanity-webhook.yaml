@@ -322,7 +322,7 @@ jobs:
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
 
           # Extract email addresses for Spanish subscribers and format them as a JSON array
-          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es" or .language == "Spanish") | .email]')
+          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es" or .language == "Español" or .language == "Spanish") | .email]')
 
           # Save only the JSON array to a file
           echo "$SPANISH_SUBSCRIBERS" >> spanish_emails.txt
