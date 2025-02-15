@@ -154,8 +154,8 @@ jobs:
           echo "## Filtering English subscribers"
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
 
-          # Extract email addresses for Spanish subscribers and format them as a JSON array
-          ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es") | .email]')
+          # Extract email addresses for English subscribers and format them as a JSON array
+          ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "en" or .language == "English" or .language == null) | .email]')
 
           # Save only the JSON array to a file
           echo "$ENGLISH_SUBSCRIBERS" >> english_emails.txt
@@ -322,7 +322,7 @@ jobs:
           SUBSCRIBERS_DATA=$(cat subscribers_data.json)
 
           # Extract email addresses for Spanish subscribers and format them as a JSON array
-          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es") | .email]')
+          SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es" or .language == "Spanish") | .email]')
 
           # Save only the JSON array to a file
           echo "$SPANISH_SUBSCRIBERS" >> spanish_emails.txt
