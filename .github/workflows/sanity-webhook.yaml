@@ -264,7 +264,7 @@ jobs:
           PAYLOAD=$(jq -n \
             --arg subject "$(echo "$ENGLISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
-            --arg to "$ENGLISH_EMAILS" \
+            --argjson to "$ENGLISH_EMAILS" \
             --arg description "A new post just dropped in Harry's Journal! Follow the link in the email to read." \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
@@ -431,7 +431,7 @@ jobs:
           PAYLOAD=$(jq -n \
             --arg subject "$(echo "$SPANISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
-            --arg to "$SPANISH_EMAILS" \
+            --argjson to "$SPANISH_EMAILS" \
             --arg description "¡Acabo de publicar un nuevo post en el Journal de Harry! Sigue el enlace del correo electrónico para leerlo." \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
