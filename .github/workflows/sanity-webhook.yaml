@@ -230,8 +230,8 @@ jobs:
               }
               /* Styling for Click Below text */
               .cta-text {
-                font-size: 15px;
-                font-weight: 400;
+                font-size: 25px;
+                font-weight: 600;
                 color: #333;
                 margin-top: 20px;
                 padding-bottom: 6px;
@@ -241,7 +241,7 @@ jobs:
           </head>
           <body>
 
-            <div class="card-title" style="text-align: center;">A New Post Just Dropped!</div>
+            <div class="card-title" style="text-align: center;">Click below to read it</div>
             
             <div class="cta-text">&#8595;</div>
 
@@ -265,7 +265,7 @@ jobs:
             --arg subject "$(echo "$ENGLISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --argjson to "$ENGLISH_EMAILS" \
-            --arg description "A new post just dropped in Harry's Journal! Follow the link in the email to read." \
+            --arg description "A new post just dropped in Harry's Journal!" \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
             --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
@@ -398,8 +398,8 @@ jobs:
               }
               /* Styling for Click Below text */
               .cta-text {
-                font-size: 16px;
-                font-weight: 400;
+                font-size: 25px;
+                font-weight: 600;
                 text-align: center;
                 color: #333;
                 margin-top: 20px;
@@ -409,7 +409,7 @@ jobs:
           </head>
           <body>
 
-            <div class="card-title" style="text-align: center;">Acabo de Publicar un Nuevo Post!</div>
+            <div class="card-title" style="text-align: center;">Haz clic abajo para leerlo</div>
             
             <div class="cta-text">&#8595;</div>
 
@@ -432,7 +432,7 @@ jobs:
             --arg subject "$(echo "$SPANISH_POST" | jq -r '.title')" \
             --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
             --argjson to "$SPANISH_EMAILS" \
-            --arg description "¡Acabo de publicar un nuevo post en el Journal de Harry! Sigue el enlace del correo electrónico para leerlo." \
+            --arg description "¡Acabo de publicar un nuevo post en el Journal de Harry!" \
             --arg html_body "$HTML_BODY" \
             --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
             --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
