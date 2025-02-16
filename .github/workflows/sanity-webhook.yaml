@@ -5,29 +5,6 @@ on:
     types: [sanity_blog_published]
 
 jobs:
-  # retrieve-subscribers:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: 'Retrieve Active Subscribers from Buttondown'
-  #       id: retrieve_subscribers
-  #       run: |
-  #         echo "## Retrieving active subscribers from Buttondown"
-          
-  #         # Make API request and format data with jq
-  #         SUBSCRIBERS_DATA=$(curl -s -X GET "https://api.buttondown.email/v1/subscribers" -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" | jq '[.results[] | select(.type != "unactivated") | {id: .id, firstName: .metadata.firstName, lastName: .metadata.surname, email: .email_address, language: .metadata.language}]')
-
-  #         # Save the output to a file
-  #         echo "$SUBSCRIBERS_DATA" > subscribers_data.json
-
-  #         # Debug: Print the value being set
-  #         echo "Subscribers Data: $(cat subscribers_data.json)"
-
-  #     - name: 'Upload Subscribers Data'
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: subscribers_data
-  #         path: subscribers_data.json
-
   filter-webhook-data:
     runs-on: ubuntu-latest
     outputs:
@@ -135,12 +112,6 @@ jobs:
           name: english_post
           path: .
 
-      # - name: 'Download Subscribers Data'
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: subscribers_data
-      #     path: .
-
       - name: 'Read English Post'
         run: |
           echo "Does Spanish Post Exist? ${{ needs.filter-webhook-data.outputs.spanish_post_exists }}"
@@ -148,19 +119,6 @@ jobs:
           echo "## Reading English post from file"
           echo "English post exists: ${{ needs.filter-webhook-data.outputs.english_post_exists }}"
           jq . english_post.json
-
-      # - name: 'Filter English Subscribers'
-      #   run: |
-      #     echo "## Filtering English subscribers"
-      #     SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-
-      #     # Extract email addresses for English subscribers and format them as a JSON array
-      #     ENGLISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "en" or .language == "English" or .language == null) | .email]')
-
-      #     # Save only the JSON array to a file
-      #     echo "$ENGLISH_SUBSCRIBERS" >> english_emails.txt
-
-      #     echo "English Subscribers: $ENGLISH_SUBSCRIBERS"
 
       - name: 'Send Email to English Subscribers'
         run: |
@@ -310,34 +268,11 @@ jobs:
           name: spanish_post
           path: .
 
-      # - name: 'Download Subscribers Data'
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: subscribers_data
-      #     path: .
-
       - name: 'Read Spanish Post'
         id: read_spanish_post
         run: |
           echo "## Reading Spanish post from file"
           jq . spanish_post.json
-
-
-      # - name: 'Filter Spanish Subscribers'
-      #   id: filter_spanish
-      #   run: |
-      #     echo "## Filtering Spanish subscribers (language == 'es')"
-      #     # Read the subscribers data from the JSON file
-      #     SUBSCRIBERS_DATA=$(cat subscribers_data.json)
-
-      #     # Extract email addresses for Spanish subscribers and format them as a JSON array
-      #     SPANISH_SUBSCRIBERS=$(echo "$SUBSCRIBERS_DATA" | jq -r '[.[] | select(.language == "es" or .language == "Español" or .language == "Spanish") | .email]')
-
-      #     # Save only the JSON array to a file
-      #     echo "$SPANISH_SUBSCRIBERS" >> spanish_emails.txt
-
-      #     echo "Spanish Subscribers: $SPANISH_SUBSCRIBERS"
-
 
       - name: 'Send Email to Spanish Subscribers'
         run: |
