@@ -168,10 +168,9 @@ jobs:
           ENGLISH_POST=$(cat english_post.json)
           ENGLISH_EMAILS="$(cat english_emails.txt)"
 
-          # Construct the HTML body
           HTML_BODY=$(cat <<EOF
           <!DOCTYPE html>
-          <html lang="es">
+          <html lang="en">
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,7 +227,6 @@ jobs:
                 font-size: 14px;
                 color: #777;
               }
-              /* Styling for Click Below text */
               .cta-text {
                 font-size: 25px;
                 font-weight: 600;
@@ -257,9 +255,11 @@ jobs:
 
           </body>
           </html>
-
           EOF
           )
+
+          # Convert multi-line HTML into a safe JSON string
+          HTML_BODY_JSON=$(jq -Rs . <<< "$HTML_BODY")
 
           # Loop through each email in the JSON array
           echo "$ENGLISH_EMAILS" | jq -r '.[]' | while read -r email; do
@@ -268,14 +268,14 @@ jobs:
               --arg subject "$(echo "$ENGLISH_POST" | jq -r '.title')" \
               --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
               --arg description "A new post just dropped in Harry's Journal!" \
-              --arg html_body "$HTML_BODY" \
+              --arg body "$HTML_BODY_JSON" \
               --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
               --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
               '{
                 subject: $subject,
                 from: $from,
                 description: $description,
-                body: $html_body,
+                body: $body,
                 headers: {
                   "List-Unsubscribe": $list_unsubscribe,
                   "List-Unsubscribe-Post": $list_unsubscribe_post
@@ -400,7 +400,6 @@ jobs:
                 font-size: 14px;
                 color: #777;
               }
-              /* Styling for Click Below text */
               .cta-text {
                 font-size: 25px;
                 font-weight: 600;
@@ -429,24 +428,27 @@ jobs:
 
           </body>
           </html>
+          EOF
+          )
 
-          EOF)
+          # Convert multi-line HTML into a safe JSON string
+          HTML_BODY_JSON=$(jq -Rs . <<< "$HTML_BODY")
 
           # Loop through each email in the JSON array
           echo "$SPANISH_EMAILS" | jq -r '.[]' | while read -r email; do
             # Construct the email payload
             PAYLOAD=$(jq -n \
               --arg subject "$(echo "$SPANISH_POST" | jq -r '.title')" \
-              --arg from "${{ secrets.BUTTONDOWN_API_KEY }}" \
+              --arg from "***" \
               --arg description "¡Acabo de publicar un nuevo post en el Journal de Harry!" \
-              --arg html_body "$HTML_BODY" \
+              --arg body "$HTML_BODY_JSON" \
               --arg list_unsubscribe "<https://buttondown.com/unsubscription-confirmation/{{ subscriber.id }}>" \
               --arg list_unsubscribe_post "List-Unsubscribe=One-Click" \
               '{
                 subject: $subject,
                 from: $from,
                 description: $description,
-                body: $html_body,
+                body: $body,
                 headers: {
                   "List-Unsubscribe": $list_unsubscribe,
                   "List-Unsubscribe-Post": $list_unsubscribe_post
@@ -455,8 +457,9 @@ jobs:
 
             # Send the email to each subscriber individually
             curl -X POST "https://api.buttondown.email/v1/subscribers/${email}/emails" \
-              -H "Authorization: Token ${{ secrets.BUTTONDOWN_API_KEY }}" \
+              -H "Authorization: Token ***" \
               -H "Content-Type: application/json" \
               -d "$PAYLOAD"
 
             echo "Email sent to $email"
+          done
