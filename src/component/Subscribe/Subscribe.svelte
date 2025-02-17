@@ -42,7 +42,7 @@
 				class="relative min-w-[235px] xxs:min-w-[300px] lg:min-w-[350px] mb-3 flex flex-col gap-y-2"
 			>
 				<label
-					class="flex flex-row items-center justify-between text-sm font-medium text-gray-900 dark:text-slate-50 md:py-0.5 lg:py-1 xl:py-1.5 2xl:py-2"
+					class="flex flex-row items-center justify-between text-sm font-medium text-gray-900 dark:text-gray-300 md:py-0.5 lg:py-1 xl:py-1.5 2xl:py-2"
 					>Preferred Language:
 					<select
 						bind:value={defaultLanguage}
@@ -61,7 +61,7 @@
 					>Email:
 					<div class="absolute inset-y-0 left-12 flex items-center pl-3.5 pointer-events-none">
 						<svg
-							class="w-4 h-4 text-gray-500 dark:text-gray-400"
+							class="w-4 h-4 text-gray-500 dark:text-gray-400 -translate-y-1.5 md:-translate-1 lg:-translate-y-0.5 xl:translate-y-0"
 							xmlns="http://www.w3.org/2000/svg"
 							fill="currentColor"
 							viewBox="0 0 20 16"
