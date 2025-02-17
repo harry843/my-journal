@@ -38,6 +38,9 @@
 	// Get the cached data from the store
 	let cachedData = get(slugData)[slug];
 
+	let navbarHeight = 0;
+	let screenHeight = '100vh'; // Default
+
 	onMount(() => {
 		// Ensure this code only runs on the client-side
 		if (!cachedData) {
@@ -53,6 +56,12 @@
 
 		// Any other DOM manipulation logic
 		screenWidth = window.innerWidth;
+
+		const navbar = document.getElementById('navbar');
+		if (navbar) {
+			navbarHeight = navbar.offsetHeight;
+			screenHeight = `calc(100vh - ${navbarHeight}px)`;
+		}
 	});
 
 	// Set the current URL
@@ -79,11 +88,7 @@
 
 <svelte:window bind:innerWidth={screenWidth} />
 
-{#if data.blog[0] === undefined && $isAuthenticated}
-	<div class="flex h-screen items-center justify-center">
-		<Loading />
-	</div>
-{:else if $isAuthenticated}
+{#if data.blog[0] != undefined && $isAuthenticated}
 	<section class="mx-2 sm:mx-5 md:mx-[15%] lg:mx-[18%] xl:mx-[22%]">
 		{#if Object.keys(data.blog[0]).length > 0}
 			{#if data.blog[0].title !== undefined}
@@ -189,9 +194,20 @@
 				/>
 
 				<Subscribe />
+
+				<div class="flex h-screen items-center justify-center">
+					<Loading />
+				</div>
 			{/if}
 		{:else}
 			<div class="text-red-500">An error occurred while fetching data. Please try again later.</div>
 		{/if}
 	</section>
+{:else if data.blog[0] === undefined && $isAuthenticated}
+	<div class="flex items-center justify-center" style="min-height: {screenHeight};">
+		<Loading />
+	</div>
+{:else}
+<div class="flex items-center justify-center" style="min-height: {screenHeight};">
+</div>
 {/if}

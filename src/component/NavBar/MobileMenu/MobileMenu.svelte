@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Moon from '../../Icons/Moon.svelte';
+	import { isAuthenticated } from '../../../stores/stores';
+import Moon from '../../Icons/Moon.svelte';
 	import Sun from '../../Icons/Sun.svelte';
 	import LanguageDropdown from '../LanguageDropdown/LanguageDropdown.svelte';
 	import SubscribeButton from '../SubscribeButton/SubscribeButton.svelte';
@@ -9,7 +10,9 @@
 </script>
 
 <ul class="flex rounded-lg space-x-3 dark:bg-gray-900 dark:border-gray-700">
+	{#if $isAuthenticated}
 	<SubscribeButton {width} />
+	{/if}
 	<LanguageDropdown />
 
 	<label class="relative flex items-center justify-center cursor-pointer">
