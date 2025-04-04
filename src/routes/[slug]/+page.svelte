@@ -66,7 +66,8 @@
 
 	// Set the current URL
 	let isLocalOrStaging =
-		$page.url.href.includes('localhost') || $page.url.href.includes('staging.harrykelleher.com');
+		$page.url.href.includes('localhost') ||
+		$page.url.href.includes('staging.journal.harrykelleher.com');
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
@@ -79,7 +80,7 @@
 	<meta name="article:published_time" content={data.blog[0]._updatedAt} />
 	<meta property="og:image" content={genImageUrl(data.blog[0].imageUrl, dataset, '?fit=max')} />
 	<meta property="og:description" content={data.blog[0].feature} />
-	<meta property="og:url" content={'https://blog.harrykelleher.com/' + data.blog[0].slug} />
+	<meta property="og:url" content={'https://journal.harrykelleher.com/' + data.blog[0].slug} />
 	<meta property="og:type" content="article" />
 	<meta name="author" content="Harry Kelleher" />
 	<meta property="og:locale" content="en_GB" />
@@ -208,6 +209,5 @@
 		<Loading />
 	</div>
 {:else}
-<div class="flex items-center justify-center" style="min-height: {screenHeight};">
-</div>
+	<div class="flex items-center justify-center" style="min-height: {screenHeight};" />
 {/if}

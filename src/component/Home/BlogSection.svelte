@@ -7,15 +7,20 @@
 
 	export let latestPost;
 
-    // Find whether the current URL is local host or staging
-	let isLocalOrStaging = $page.url.href.includes('localhost') || $page.url.href.includes('staging.harrykelleher.com');
+	// Find whether the current URL is local host or staging
+	let isLocalOrStaging =
+		$page.url.href.includes('localhost') ||
+		$page.url.href.includes('staging.journal.harrykelleher.com');
 
-    const dataset = process.env.NODE_ENV === "development" || isLocalOrStaging ? "development" : "production"
+	const dataset =
+		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
 	$: imageUrlParams = '?fm=webp&max-h=300&max-w=500&min-h=240&min-w=400';
 
 	afterUpdate(() => {
-		isLocalOrStaging =  $page.url.href.includes('localhost') || $page.url.href.includes('staging.harrykelleher.com');
+		isLocalOrStaging =
+			$page.url.href.includes('localhost') ||
+			$page.url.href.includes('staging.journal.harrykelleher.com');
 	});
 </script>
 
@@ -30,7 +35,9 @@
 			</h2>
 		</div>
 		<div class="md:col-start-2 md:col-span-4">
-			<p class="ml-px pb-1 font-customQuote xl:text-lg 2xl:text-xl">Every now and then, I write about something that interests me.</p>
+			<p class="ml-px pb-1 font-customQuote xl:text-lg 2xl:text-xl">
+				Every now and then, I write about something that interests me.
+			</p>
 			<h1 class="font-customHeading font-semibold text-left text-xl pt-5">↓ Latest Blog Post ↓</h1>
 		</div>
 		<BlogPostCard

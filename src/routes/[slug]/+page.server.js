@@ -4,7 +4,7 @@ import { createClient } from '@sanity/client';
 export async function load({ params, url }) {
 	// Sanity Client Setup
 	let isLocalOrStaging =
-		url.href.includes('localhost') || url.href.includes('staging.harrykelleher.com');
+		url.href.includes('localhost') || url.href.includes('staging.journal.harrykelleher.com');
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
 
