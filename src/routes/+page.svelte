@@ -14,6 +14,8 @@
 		$page.url.href.includes('staging.journal.harrykelleher.com');
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
+	
+	console.log($page.url.href, dataset);
 
 	// List of Spanish-speaking country shortcodes (ISO 3166-1 alpha-2)
 	const spanishSpeakingCountries = [

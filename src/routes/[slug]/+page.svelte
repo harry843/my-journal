@@ -139,7 +139,7 @@
 				</div>
 			{/if}
 			{#if data.blog[0].imageUrl !== undefined}
-				<figure class="py-4">
+				<figure class="flex flex-col items-center py-4">
 					<img
 						src={genImageUrl(data.blog[0].imageUrl, dataset, '?fit=max')}
 						alt={data.blog[0].imageAlt}
@@ -195,10 +195,6 @@
 				/>
 
 				<Subscribe />
-
-				<div class="flex h-screen items-center justify-center">
-					<Loading />
-				</div>
 			{/if}
 		{:else}
 			<div class="text-red-500">An error occurred while fetching data. Please try again later.</div>
