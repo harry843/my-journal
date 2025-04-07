@@ -68,7 +68,7 @@
                 <div
                     class="bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-4 py-3 rounded-lg shadow-sm"
                 >
-                    <div class="translate-x-[85%] px-4 pb-3 z-10">
+                    <div class="translate-x-[75%] px-4 pb-3 z-10">
                         <button aria-label="Hide table of contents" class="" on:click={handleButtonClick}
                             ><ArrowLeft /></button>
                     </div>
