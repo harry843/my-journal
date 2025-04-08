@@ -28,6 +28,7 @@
 	import CustomOrderedList from '../../component/Blog/PortableText/CustomOrderedList.svelte';
 	import CustomOrderedListItem from '../../component/Blog/PortableText/CustomOrderedListItem.svelte';
 	import Subscribe from '../../component/Subscribe/Subscribe.svelte';
+	import CustomWhatsApp from '../../component/Blog/PortableText/CustomWhatsApp.svelte';
 
 	export let data;
 
@@ -139,7 +140,7 @@
 				</div>
 			{/if}
 			{#if data.blog[0].imageUrl !== undefined}
-				<figure class="py-4">
+				<figure class="flex flex-col items-center py-4">
 					<img
 						src={genImageUrl(data.blog[0].imageUrl, dataset, '?fit=max')}
 						alt={data.blog[0].imageAlt}
@@ -163,7 +164,8 @@
 							quote: CustomQuote,
 							imageWithAlt: CustomImage,
 							iframe: CustomIFrame,
-							code: CustomCodeBlock
+							code: CustomCodeBlock,
+							whatsapp: CustomWhatsApp,
 						},
 						block: {
 							normal: CustomParagraph,
@@ -195,10 +197,6 @@
 				/>
 
 				<Subscribe />
-
-				<div class="flex h-screen items-center justify-center">
-					<Loading />
-				</div>
 			{/if}
 		{:else}
 			<div class="text-red-500">An error occurred while fetching data. Please try again later.</div>
