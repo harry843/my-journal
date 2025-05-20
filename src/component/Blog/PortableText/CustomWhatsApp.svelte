@@ -30,15 +30,16 @@
 	});
 
 	function getBubbleClasses(msg) {
-		return `
-			relative max-w-[80%] py-1.5 px-2.5 rounded-lg shadow-sm flex flex-col
-			${msg.self
-				? `bg-[#dcf8c6] dark:bg-emerald-800' ${msg.firstOfGroup ? 'rounded-tr-none after:right-[-14px] after:border-l-[#dcf8c6] after:dark:border-l-emerald-800 after:border-r-transparent after:translate-x-[10px]' : ''}`
-				: `bg-white dark:bg-gray-800' ${msg.firstOfGroup ? 'rounded-tl-none after:left-[-24px] after:border-r-white after:dark:border-r-gray-800 after:border-l-transparent' : ''}`
-			}
-			${msg.firstOfGroup ? 'after:absolute after:top-0 after:border-[12px] after:border-transparent after:content-[""] after:border-t-0' : ''}
-		`;
-	}
+	return `
+		relative max-w-[80%] py-1.5 px-2.5 rounded-lg shadow-sm flex flex-col
+		${msg.self
+			? `bg-[#dcf8c6] dark:bg-emerald-800 ${msg.firstOfGroup ? 'rounded-tr-none after:right-[-14px] after:border-l-[#dcf8c6] after:dark:border-l-emerald-800 after:border-r-transparent after:translate-x-[10px]' : ''}`
+			: `bg-white dark:bg-gray-800 ${msg.firstOfGroup ? 'rounded-tl-none after:left-[-24px] after:border-r-white after:dark:border-r-gray-800 after:border-l-transparent' : ''}`
+		}
+		${msg.firstOfGroup ? 'after:absolute after:top-0 after:border-[12px] after:border-transparent after:content-[""] after:border-t-0' : ''}
+	`.trim().replace(/\s+/g, ' ');
+}
+
 </script>
 
 <!-- Background wrapper -->
@@ -68,7 +69,7 @@
 							{msg.name}
 						</div>
 					{/if}
-					<div class="text-base mb-1 dark:text-gray-100">{msg.message}</div>
+					<div class="text-base mb-1 dark:text-slate-50">{msg.message}</div>
 					<div class="text-xs text-right text-gray-600 dark:text-gray-300">{msg.timestamp}</div>
 				</div>
 			</div>
