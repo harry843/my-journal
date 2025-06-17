@@ -29,6 +29,7 @@
 	import CustomOrderedListItem from '../../component/Blog/PortableText/CustomOrderedListItem.svelte';
 	import Subscribe from '../../component/Subscribe/Subscribe.svelte';
 	import CustomWhatsApp from '../../component/Blog/PortableText/CustomWhatsApp.svelte';
+	import CustomLineBreak from '../../component/Blog/PortableText/CustomLineBreak.svelte';
 
 	export let data;
 
@@ -166,6 +167,7 @@
 							iframe: CustomIFrame,
 							code: CustomCodeBlock,
 							whatsapp: CustomWhatsApp,
+							break: CustomLineBreak
 						},
 						block: {
 							normal: CustomParagraph,
