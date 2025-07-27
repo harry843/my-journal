@@ -18,7 +18,7 @@
 
 <Card href="/{slug}{urlParams}" target="_self" {additionalClass} {index}>
 	<div class="" slot="image">
-		<img class={index === 0 ? 'items-center' : 'max-h-[300px] '} src={coverImage} alt={altText} />
+		<img class={index === 0 ? 'items-center max-h-[300px] ' : 'max-h-[300px] '} src={coverImage} alt={altText} />
 	</div>
 	<div class="gap-0 items-start" slot="content">
 		<h1 class="flex items-center justify-between w-full text-2xl font-semibold">
@@ -43,52 +43,3 @@
 		{/if}
 	</div>
 </Card>
-
-<!-- <style lang="scss">
-	.content {
-		display: flex;
-		flex-direction: column;
-		gap: 0px;
-		align-items: flex-start;
-	}
-
-	.title {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		font-size: 1.2rem;
-		font-family: var(--font--title);
-		font-weight: 700;
-	}
-
-	.tags {
-		display: flex;
-		align-items: center;
-		gap: 5px;
-		flex-wrap: wrap;
-	}
-
-	.note {
-		font-size: 0.8rem;
-		color: rgba(var(--color--text-rgb), 0.8);
-	}
-
-	.text {
-		margin-top: 5px;
-		font-size: 0.9rem;
-		text-align: justify;
-	}
-
-	.footer {
-		margin-top: 20px;
-	}
-
-	:global(.blog-post-card .image img) {
-		object-fit: cover;
-	}
-
-	:global(.blog-post-card.no-image > .image) {
-		display: none;
-	}
-</style> -->
