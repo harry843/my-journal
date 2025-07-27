@@ -20,7 +20,7 @@
 	export let portableText;
 
 	let isLocalOrStaging =
-		$page.url.href.includes('localhost') || $page.url.href.includes('staging.harrykelleher.com');
+		$page.url.href.includes('localhost') || $page.url.href.includes('staging.journal.harrykelleher.com');
 
 	const dataset =
 		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
