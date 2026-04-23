@@ -18,4 +18,5 @@ export const languages = writable([
 
 export const blogViews = writable<number>(0);
 
-export const isAuthenticated = writable<boolean>(false)
+// Updated to default to true to remove password requirement
+export const isAuthenticated = writable<boolean>(true)
