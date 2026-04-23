@@ -4,6 +4,7 @@
 	import BlogPostCard from '../../component/Card/BlogPostCard/BlogPostCard.svelte';
 	import averageReadingTime from '../../component/Card/BlogPostCard/averageReadingTime';
 	import genImageUrl from '../Sanity/utils/genImageUrl';
+	import { currentLanguage } from '../../stores/stores';
 
 	export let latestPost;
 
@@ -47,7 +48,7 @@
 			altText={latestPost.imageAlt}
 			excerpt={latestPost.feature}
 			tags={latestPost?.tags}
-			readingTime={averageReadingTime(latestPost?.content)}
+			readingTime={averageReadingTime(latestPost?.content, $currentLanguage)}
 			additionalClass={'col-span-full'}
 			index={0}
 		/>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import BlogPostCard from '../component/Card/BlogPostCard/BlogPostCard.svelte';
 	import averageReadingTime from '../component/Card/BlogPostCard/averageReadingTime';
 	import Loading from '../component/Loading/Loading.svelte';
@@ -8,89 +7,59 @@
 	import genImageUrl from '../component/Sanity/utils/genImageUrl';
 	import { blogData, currentLanguage, isAuthenticated } from '../stores/stores';
 
-	// Find whether the current URL is local host or staging
+	// 👇 receive data from +page.server.ts
+	export let data;
+	console.log(data)
+	// Set language from server immediately (no flicker)
+	currentLanguage.set(data.language);
+
+	// Detect environment
 	let isLocalOrStaging =
 		$page.url.href.includes('localhost') ||
 		$page.url.href.includes('staging.journal.harrykelleher.com');
+
 	const dataset =
-		process.env.NODE_ENV === 'development' || isLocalOrStaging ? 'development' : 'production';
-	
+		process.env.NODE_ENV === 'development' || isLocalOrStaging
+			? 'development'
+			: 'production';
+
 	console.log($page.url.href, dataset);
 
-	// List of Spanish-speaking country shortcodes (ISO 3166-1 alpha-2)
-	const spanishSpeakingCountries = [
-		'AR',
-		'BO',
-		'CL',
-		'CO',
-		'CR',
-		'CU',
-		'DO',
-		'EC',
-		'SV',
-		'GQ',
-		'GT',
-		'HN',
-		'MX',
-		'NI',
-		'PA',
-		'PY',
-		'PE',
-		'ES',
-		'UY',
-		'VE'
-	];
-
-	// Function to build the GROQ query
+	// GROQ query builder
 	function buildQuery(lang) {
 		return `
       *[_type == 'personal' && language == '${lang}']
       | order(_createdAt desc) {
-        title, "slug":slug.current, "imageUrl":mainImage.image.asset._ref, "imageCaption":mainImage.caption, "imageAlt":mainImage.alt, feature, tags, content
+        title,
+        "slug":slug.current,
+        "imageUrl":mainImage.image.asset._ref,
+        "imageCaption":mainImage.caption,
+        "imageAlt":mainImage.alt,
+        feature,
+        tags,
+        content
       }
     `;
 	}
 
-	let getAllPosts = buildQuery($currentLanguage);
+	let getAllPosts = buildQuery(data.language);
 
-	$: {
-		getAllPosts = buildQuery($currentLanguage);
-	}
-
-	// Fetch user's country and set language
-	async function detectUserCountry() {
-		try {
-			const response = await fetch('https://ipapi.co/json/');
-			const ipData = await response.json();
-			console.log('User Country Code:', ipData.country_code);
-
-			// Set language based on country code
-			if (spanishSpeakingCountries.includes(ipData.country_code)) {
-				currentLanguage.set('es');
-			} else {
-				currentLanguage.set('en');
-			}
-			console.log($currentLanguage);
-			getAllPosts = buildQuery($currentLanguage);
-		} catch (error) {
-			console.error('Error fetching user country:', error);
-			currentLanguage.set('en'); // Default to English if error occurs
-			getAllPosts = buildQuery($currentLanguage);
-		}
-	}
+	// React to language changes
+	$: getAllPosts = buildQuery($currentLanguage);
 
 	let headerHeight = 0;
 
-	// Set default language on mount
+	// Only keep DOM-related logic in onMount
+	import { onMount } from 'svelte';
+
 	onMount(() => {
-		detectUserCountry();
 		const header = document.getElementById('main-header');
 		if (header) {
 			headerHeight = header.offsetHeight;
 		}
 	});
 
-	// Function to handle data from DataFetcher
+	// Handle fetched blog data
 	function handleData(data) {
 		blogData.set(data);
 	}
