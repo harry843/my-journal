@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import { currentLanguage } from '../stores/stores'; // adjust the path if needed
 	import Footer from '../component/NavBar/Footer/Footer.svelte';
-	import PasswordModal from '../component/PasswordModal/PasswordModal.svelte';
+	// import PasswordModal from '../component/PasswordModal/PasswordModal.svelte';
 
 	$: outerWidth = 0;
 
