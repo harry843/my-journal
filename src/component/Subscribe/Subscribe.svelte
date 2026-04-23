@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { currentLanguage } from '../../stores/stores';
 
-	const ariaLabel =
+	$: ariaLabel =
 		$currentLanguage === 'es' ? 'Suscríbete a mi boletín' : 'Subscribe to my newsletter';
-	const subscribeHeader =
+	$: subscribeHeader =
 		$currentLanguage === 'es'
 			? 'Reflexiones ligeramente entretenidas, directamente para ti'
 			: 'Mildly entertaining musings, straight to you';
-	const subscribeText =
+	$: subscribeText =
 		$currentLanguage === 'es'
 			? 'Recibe mis últimas anécdotas directamente en tu buzón de entrada: nada de spam, sólo historias frescas en cuanto se publican. ¡Suscríbete abajo!'
 			: 'Get my latest anecdotes delivered straight to your inbox — no spam, just fresh stories as soon as they’re published. Subscribe below!';
-	const unsubscribeText =
+	$: unsubscribeText =
 		$currentLanguage === 'es'
 			? 'Puedes darte de baja en cualquier momento. Desarrollado por'
 			: 'You can unsubscribe at any time. Powered by';

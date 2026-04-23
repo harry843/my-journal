@@ -35,14 +35,16 @@
 	}
 
 	// Store subscription to monitor authentication state
-	let authenticated = false;
+	
+	// let authenticated = false;
+	let authenticated = true;
 	isAuthenticated.subscribe((value) => {
 		authenticated = value;
 	});
 
-	// Refetch data whenever query changes, but only if authenticated
+	// Refetch data whenever query changes, but only if authenticated // removed authenticated variable from if dependency
 	$: {
-		if (authenticated && query) {
+		if (query) {
 			fetchData(query);
 		}
 	}
